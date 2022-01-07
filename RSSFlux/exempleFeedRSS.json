@@ -1,0 +1,140 @@
+{"bozo": false, 
+    "entries": [
+        {
+            "tags": [
+                {
+                    "term": "Sorties Cin\u00e9",
+                    "scheme": null,
+                    "label": null}], 
+            "title": "Marvel : quand un Tom Holland alcoolis\u00e9 sauvait le destin de Spider-Man",
+            "title_detail": {
+                "type": "text/plain", 
+                "language": null, 
+                "base": "http://rss.allocine.fr/ac/actualites/cine", 
+                "value": "Marvel : quand un Tom Holland alcoolis\u00e9 sauvait le destin de Spider-Man"
+                }, 
+            "links": [
+                {
+                    "rel": "alternate", 
+                    "type": "text/html", 
+                    "href": "http://www.allocine.fr/article/fichearticle_gen_carticle=18705761.html"
+                }, 
+                {
+                    "type": "image/jpeg", 
+                    "length": "0", 
+                    "href": "http://fr.web.img5.acsta.net/newsv7/22/01/06/15/18/1908938.jpg", 
+                    "rel": "enclosure"
+                }], 
+            "link": "http://www.allocine.fr/article/fichearticle_gen_carticle=18705761.html", 
+            "summary": "Tom Holland a permis \u00e0 son personnage de Spider-Man de rester dans l'univers des Avengers gr\u00e2ce \u00e0 un coup de fil au cours duquel il \u00e9tait... un peu \u00e9m\u00e9ch\u00e9 !<p>&gt;&gt; <a href=\"http://www.allocine.fr/article/fichearticle_gen_carticle=18705761.html\">Lire l'article</a>  | sur <i><a href=\"https://www.allocine.fr\">AlloCin\u00e9</a></i>  - vendredi 7 janvier 2022</p><br /><br />",
+            "summary_detail": {
+                "type": "text/html",
+                "language": null,
+                "base": "http://rss.allocine.fr/ac/actualites/cine",
+                "value": "Tom Holland a permis \u00e0 son personnage de Spider-Man de rester dans l'univers des Avengers gr\u00e2ce \u00e0 un coup de fil au cours duquel il \u00e9tait... un peu \u00e9m\u00e9ch\u00e9 !<p>&gt;&gt; <a href=\"http://www.allocine.fr/article/fichearticle_gen_carticle=18705761.html\">Lire l'article</a>  | sur <i><a href=\"https://www.allocine.fr\">AlloCin\u00e9</a></i>  - vendredi 7 janvier 2022</p><br /><br />"
+                },
+            "published": "Fri, 07 Jan 2022 08:35:00 GMT",
+            "published_parsed": [2022, 1, 7, 8, 35, 0, 4, 7, 0],
+            "id": "actualitescine18705761", 
+            "guidislink": false
+    }], 
+    "feed": 
+    {
+        "title": "Toute l'actualit\u00e9 Cin\u00e9", 
+        "title_detail": 
+        {
+            "type": "text/plain", 
+            "language": null, 
+            "base": "http://rss.allocine.fr/ac/actualites/cine", 
+            "value": "Toute l'actualit\u00e9 Cin\u00e9"
+        },
+        "links": [
+            {
+                "rel": "alternate", 
+                "type": "text/html", 
+                "href": "https://www.allocine.fr"
+            }, {
+                "rel": "self", 
+                "type": "application/rss+xml", 
+                "href": "http://rss.allocine.fr/ac/actualites/cine"
+            }, {
+                "rel": "hub", 
+                "href": "http://pubsubhubbub.appspot.com/", 
+                "type": "text/html"
+            }], 
+        "link": "https://www.allocine.fr", 
+        "subtitle": "Toute l'actualit\u00e9 du cin\u00e9ma", 
+        "subtitle_detail": 
+        {
+            "type": "text/html", 
+            "language": null, 
+            "base": "http://rss.allocine.fr/ac/actualites/cine",
+            "value": "Toute l'actualit\u00e9 du cin\u00e9ma"
+        }, 
+        "rights": "Copyright 2022 AlloCin\u00e9", 
+        "rights_detail": 
+        {
+            "type": "text/plain", 
+            "language": null, 
+            "base": "http://rss.allocine.fr/ac/actualites/cine", 
+            "value": "Copyright 2022 AlloCin\u00e9"
+        }, 
+        "tags": [
+            {
+                "term": "Cinema", 
+                "scheme": null, 
+                "label": null
+            }], 
+        "language": "fr-FR", 
+        "updated": "Fri, 07 Jan 2022 09:05:57 GMT", 
+        "updated_parsed": [2022, 1, 7, 9, 5, 57, 4, 7, 0], 
+        "published": "Fri, 07 Jan 2022 09:05:57 GMT", 
+        "published_parsed": [2022, 1, 7, 9, 5, 57, 4, 7, 0], 
+        "ttl": "20", 
+        "image": 
+        {
+            "title": "Toute l'actualit\u00e9 Cin\u00e9", 
+            "title_detail": 
+            {
+                "type": "text/plain", 
+                "language": null, 
+                "base": "http://rss.allocine.fr/ac/actualites/cine", 
+                "value": "Toute l'actualit\u00e9 Cin\u00e9"}, 
+                "links": 
+                [{
+                    "rel": "alternate", 
+                    "type": "text/html", 
+                    "href": "https://www.allocine.fr"
+                }], 
+                "link": "https://www.allocine.fr", 
+                "href": "http://images.allocine.fr/commons/logos/rss/allocine.png"}, 
+                "feedburner_info": 
+                {
+                    "uri": "ac/actualites/cine"
+                }}, 
+                "headers": 
+                {
+                    "content-type": "text/xml; charset=UTF-8", 
+                    "etag": "L2ctbGv6qFieNhRhIeymDBXFF/Y", 
+                    "last-modified": "Fri, 07 Jan 2022 09:06:29 GMT", 
+                    "content-encoding": "gzip", 
+                    "transfer-encoding": "chunked", 
+                    "date": "Fri, 07 Jan 2022 09:16:32 GMT", 
+                    "expires": "Fri, 07 Jan 2022 09:16:32 GMT", 
+                    "cache-control": "private, max-age=0", 
+                    "x-content-type-options": "nosniff", 
+                    "x-xss-protection": "1; mode=block", 
+                    "server": "GSE", "connection": "close"}, 
+                    "etag": "L2ctbGv6qFieNhRhIeymDBXFF/Y", 
+                    "updated": "Fri, 07 Jan 2022 09:06:29 GMT", 
+                    "updated_parsed": [2022, 1, 7, 9, 6, 29, 4, 7, 0], 
+                    "href": "http://rss.allocine.fr/ac/actualites/cine", 
+                    "status": 200, 
+                    "encoding": "UTF-8", 
+                    "version": "rss20", 
+                    "namespaces": 
+                    {
+                        "": "http://www.w3.org/2005/Atom", 
+                        "feedburner": "http://rssnamespace.org/feedburner/ext/1.0"
+                    }
+    }

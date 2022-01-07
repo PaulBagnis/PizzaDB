@@ -1,6 +1,6 @@
 import feedparser
 from pymongo import MongoClient
-import json
+import time
 
 # url actu ciné : http://rss.allocine.fr/ac/actualites/cine
 # url nouvelle sorties semaine : http://rss.allocine.fr/ac/cine/cettesemaine
@@ -22,12 +22,15 @@ def alreadyExists(newID):
     else:
         return False
 
-for key in urls :
-    Feed = feedparser.parse(urls[key])
-    articles = []
-    for entry in Feed.entries : 
-        
-        if alreadyExists(entry["id"]) :
-            break
-        articles.append(entry)
-    if articles : allocine.insert_many(articles)
+def getArticlesFromAllocineRSS() :
+    while True:
+        for key in urls :
+            Feed = feedparser.parse(urls[key])
+            articles = []
+            for entry in Feed.entries : 
+                
+                if alreadyExists(entry["id"]) :
+                    break
+                articles.append(entry)
+            if articles : allocine.insert_many(articles)
+        time.sleep(300)
