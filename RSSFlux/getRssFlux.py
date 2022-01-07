@@ -19,9 +19,7 @@ urls = {
 
 
 def alreadyExists(col, newID):
-    query = col + ".find({'id': '" + newID + "'}, {'_id': 1})"
-    response = eval(query)
-    if len(list(response)) > 0:
+    if len(list(db[col].find({"id": newID}, {"_id": 1}))) > 0:
         return True
     else:
         return False
@@ -39,8 +37,7 @@ def getArticlesFromRSS():
                         break
                     articles.append(entry)
                 if articles:
-                    query = source + ".insert_many(articles)"
-                    exec(query)
+                    db[source].insert_many(articles)
                     nbOfNewArticles += len(articles)
             print(
                 "{} new articles added in RSSFlux.{} collection !".format(
