@@ -2,6 +2,8 @@ import feedparser
 from pymongo import MongoClient
 import time
 
+#  TO DO : Utiliser BeautifulSoup pour parse le HTML et récuperer que ce qui peut nous interesser
+
 client = MongoClient("localhost", 27017)
 db = client.RSSFlux
 allocine = db.allocine
