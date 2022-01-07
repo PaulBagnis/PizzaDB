@@ -28,25 +28,23 @@ def alreadyExists(col, newID):
 
 
 def getArticlesFromRSS():
-    while True:
-        for source in urls:
-            nbOfNewArticles = 0
-            for url in urls[source]:
-                Feed = feedparser.parse(url)
-                articles = []
-                for entry in Feed.entries:
-                    if alreadyExists(source, entry["id"]):
-                        break
-                    articles.append(entry)
-                if articles:
-                    db[source].insert_many(articles)
-                    nbOfNewArticles += len(articles)
-            print(
-                "{} new articles added in RSSFlux.{} collection !".format(
-                    nbOfNewArticles, source
-                )
+    for source in urls:
+        nbOfNewArticles = 0
+        for url in urls[source]:
+            Feed = feedparser.parse(url)
+            articles = []
+            for entry in Feed.entries:
+                if alreadyExists(source, entry["id"]):
+                    break
+                articles.append(entry)
+            if articles:
+                db[source].insert_many(articles)
+                nbOfNewArticles += len(articles)
+        print(
+            "{} new articles added in RSSFlux.{} collection !".format(
+                nbOfNewArticles, source
             )
-        time.sleep(10)
+        )
 
 
 getArticlesFromRSS()
