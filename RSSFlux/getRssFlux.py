@@ -2,10 +2,6 @@ import feedparser
 from pymongo import MongoClient
 import time
 
-# url actu ciné : http://rss.allocine.fr/ac/actualites/cine
-# url nouvelle sorties semaine : http://rss.allocine.fr/ac/cine/cettesemaine
-# url film a l'affiche : http://rss.allocine.fr/ac/cine/alaffiche
-
 client = MongoClient("localhost", 27017)
 db = client.RSSFlux
 allocine = db.allocine
@@ -31,7 +27,7 @@ def alreadyExists(col, newID):
         return False
 
 
-def getArticlesFromAllocineRSS():
+def getArticlesFromRSS():
     while True:
         for source in urls:
             nbOfNewArticles = 0
@@ -54,4 +50,4 @@ def getArticlesFromAllocineRSS():
         time.sleep(10)
 
 
-getArticlesFromAllocineRSS()
+getArticlesFromRSS()
