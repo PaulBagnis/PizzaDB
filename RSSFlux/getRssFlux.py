@@ -2,18 +2,15 @@ import feedparser
 import ssl
 import urllib
 from elasticsearch import Elasticsearch, exceptions, helpers
-
-
-#  TO DO : Utiliser BeautifulSoup pour parse le HTML et récuperer que ce qui peut nous interesser
+from bs4 import BeautifulSoup
 
 # ElasticSearch client instantiation
 es = Elasticsearch()
 
-
 # RSS feed's urls
 urls = {
     "allocinesemaine": ["http://rss.allocine.fr/ac/cine/cettesemaine"],
-    "allocineaffiche" : ["http://rss.allocine.fr/ac/cine/alaffiche"],
+    "allocineaffiche": ["http://rss.allocine.fr/ac/cine/alaffiche"],
     "screenrant": ["https://screenrant.com/feed/"],
 }
 
@@ -26,10 +23,11 @@ def alreadyExists(ind, newID):
     query_body = {"bool": {"must": {"match": {"id": newID}}}}
     try:
         res = es.search(index=ind, query=query_body)
-        if res["hits"]['total']['value'] != 0:
+        if res["hits"]["total"]["value"] != 0:
             return True
         else:
             return False
+    # This Error is raised when index doesn't exists so function will return False
     except exceptions.NotFoundError:
         return False
 
@@ -47,11 +45,35 @@ def getFeed(url):
     return feed
 
 
+# Argument : - content : content from article that contains HTML
+# Returns only the main text from article without any HTML tag
+def parsingHtml(content):
+    soup = BeautifulSoup(content, "lxml")
+    results = soup.find_all("p")
+    content = results[0].text.split(" - ")[1]
+    return content
+
+
 # Argument : - source : name of the index
 #            - articles : array of RSS articles to insert in DB
 # Does the bulk inserts in ElasticSearch DB
 def insertInDb(source, articles):
-    actions = [{"_index": source, "_source": article} for article in articles]
+    actions = []
+    for article in articles:
+        # Test if article is in HTML format, if yes, parses via parsingHtml function
+        if bool(BeautifulSoup(article["summary"], "html.parser").find()):
+            article["summary"] = parsingHtml(article["summary"])
+        actions.append(
+            {
+                "_index": source,
+                "_source": {
+                    "title": article["title"],
+                    "summary": article["summary"],
+                    "published": article["published_parsed"],
+                    "id": article["id"],
+                },
+            }
+        )
     helpers.bulk(es, actions)
 
 
@@ -69,10 +91,11 @@ def getArticlesFromRSS():
             if articles:
                 insertInDb(source, articles)
                 nbOfNewArticles += len(articles)
-        print(
-            "{} new articles added in {}'s index !".format(
-                nbOfNewArticles, source
-            )
-        )
+        print("{} new articles added in {}'s index !".format(nbOfNewArticles, source))
 
+
+# Uncomment to delete indexes
+# es.indices.delete(index="allocinesemaine", ignore=[400, 404])
+# es.indices.delete(index="allocineaffiche", ignore=[400, 404])
+# es.indices.delete(index="screenrant", ignore=[400, 404])
 getArticlesFromRSS()
