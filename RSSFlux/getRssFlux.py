@@ -12,10 +12,8 @@ es = Elasticsearch()
 
 # RSS feed's urls
 urls = {
-    "allocine": [
-        "http://rss.allocine.fr/ac/cine/cettesemaine",
-        "http://rss.allocine.fr/ac/cine/alaffiche",
-    ],
+    "allocinesemaine": ["http://rss.allocine.fr/ac/cine/cettesemaine"],
+    "allocineaffiche" : ["http://rss.allocine.fr/ac/cine/alaffiche"],
     "screenrant": ["https://screenrant.com/feed/"],
 }
 
@@ -28,7 +26,7 @@ def alreadyExists(ind, newID):
     query_body = {"bool": {"must": {"match": {"id": newID}}}}
     try:
         res = es.search(index=ind, query=query_body)
-        if res["took"] != 0:
+        if res["hits"]['total']['value'] != 0:
             return True
         else:
             return False
@@ -72,10 +70,9 @@ def getArticlesFromRSS():
                 insertInDb(source, articles)
                 nbOfNewArticles += len(articles)
         print(
-            "{} new articles added in RSSFlux.{} index !".format(
+            "{} new articles added in {}'s index !".format(
                 nbOfNewArticles, source
             )
         )
-
 
 getArticlesFromRSS()
