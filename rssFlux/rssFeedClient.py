@@ -37,15 +37,16 @@ class RSSFeedClient(object):
                 article['summary'] = self.parsingHtml(article['summary'])
             actions.append({
                 '_index': source,
+                '_id': article['id'],
                 '_source': {
                     'title': article['title'],
                     'summary': article['summary'],
                     'polarity': self.sa.calculatePolarity_baseFive(article['summary']),
-                    'published': article['published_parsed'],
-                    'id': article['id'],
+                    'published': article['published_parsed']
                 }
             })
         self.db.insertData(actions)
+
 
     def deleteDb(self):
         for source, url in self.urls.items():
@@ -85,6 +86,7 @@ class RSSFeedClient(object):
             else:
                 print('No new article found in {}\'s index !'.format(source))
         return feed
+
 
     def pushNewArticles(self):
         for source, articles in self.getArticlesFromRSS():
