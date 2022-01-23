@@ -22,11 +22,7 @@ urls = {
 def alreadyExists(ind, newID):
     query_body = {"bool": {"must": {"match": {"id": newID}}}}
     try:
-        res = es.search(index=ind, query=query_body)
-        if res["hits"]["total"]["value"] != 0:
-            return True
-        else:
-            return False
+        return es.search(index=ind, query=query_body)["hits"]["total"]["value"]
     # This Error is raised when index doesn't exists so function will return False
     except exceptions.NotFoundError:
         return False
@@ -48,10 +44,7 @@ def getFeed(url):
 # Argument : - content : content from article that contains HTML
 # Returns only the main text from article without any HTML tag
 def parsingHtml(content):
-    soup = BeautifulSoup(content, "lxml")
-    results = soup.find_all("p")
-    content = results[0].text.split(" - ")[1]
-    return content
+    return BeautifulSoup(content, "lxml").find_all("p")[0].text.split(" - ")[1]
 
 
 # Argument : - source : name of the index
@@ -63,17 +56,15 @@ def insertInDb(source, articles):
         # Test if article is in HTML format, if yes, parses via parsingHtml function
         if bool(BeautifulSoup(article["summary"], "html.parser").find()):
             article["summary"] = parsingHtml(article["summary"])
-        actions.append(
-            {
-                "_index": source,
-                "_source": {
-                    "title": article["title"],
-                    "summary": article["summary"],
-                    "published": article["published_parsed"],
-                    "id": article["id"],
-                },
-            }
-        )
+        actions.append({
+            "_index": source,
+            "_source": {
+                "title": article["title"],
+                "summary": article["summary"],
+                "published": article["published_parsed"],
+                "id": article["id"],
+            },
+        })
     helpers.bulk(es, actions)
 
 
