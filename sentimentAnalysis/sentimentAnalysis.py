@@ -6,7 +6,12 @@ class SentimentAnalysis(object):
         pass
 
     def calculatePolarity(self, text):
-        return TextBlob(self.clean(text)).sentiment.polarity > 0
-        
+        return TextBlob(self.clean(text)).sentiment.polarity
+
+
+    def calculatePolarity_baseFive(self, text):
+        return float(format(5 * (( self.calculatePolarity(text)+1 )/2), '.1f'))
+
+
     def clean(self, text):
         return ' '.join(sub('(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)', ' ', text).split())

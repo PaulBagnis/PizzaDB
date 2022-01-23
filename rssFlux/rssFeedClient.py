@@ -5,9 +5,10 @@ import ssl
 
 
 class RSSFeedClient(object):
-    def __init__(self, db, urls):
-        self.db=db
-        self.urls=urls
+    def __init__(self, db, sa, urls={}):
+        self.db = db
+        self.sa = sa
+        self.urls = urls
 
     # Argument : - url : endpoint of the RSS feed we are going to fetch
     # Returns the RSS feed and handles certificates problems when fetching feed
@@ -21,6 +22,9 @@ class RSSFeedClient(object):
             pass
         return feed
 
+
+    def addSources(self, urls):
+        self.urls.update(urls)
 
     # Argument : - source : name of the index
     #            - articles : array of RSS articles to insert in DB
@@ -36,6 +40,7 @@ class RSSFeedClient(object):
                 '_source': {
                     'title': article['title'],
                     'summary': article['summary'],
+                    'polarity': self.sa.calculatePolarity_baseFive(article['summary']),
                     'published': article['published_parsed'],
                     'id': article['id'],
                 }
@@ -45,7 +50,6 @@ class RSSFeedClient(object):
     def deleteDb(self):
         for source, url in self.urls.items():
             self.db.deleteData(source)
-
 
     # Argument : - index : the name of the Elasticsearch index
     #            - newId : id from the RSS article to search in Db

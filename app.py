@@ -17,12 +17,13 @@ def main():
     tweet_query_nb=300
 
     es = ElasticSearchClient()
-    sm = SentimentAnalysis()
-    rss_feed = RSSFeedClient(es, rss_urls)
+    sa = SentimentAnalysis()
+    rss_feed = RSSFeedClient(es, sa)
+    rss_feed.addSources(rss_urls)
     rss_feed.deleteDb()
     rss_feed.pushNewArticles()
 
-    # twitter_feed = TwitterClient(es, sm)
+    # twitter_feed = TwitterClient(es, sa)
     # tweets = twitter_feed.get_tweets(query = hashtag, count = tweet_query_nb)
 
 if __name__ == '__main__':
