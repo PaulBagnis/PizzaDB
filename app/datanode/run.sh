@@ -7,3 +7,5 @@ if [ ! -d $datadir ]; then
 fi
 
 $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR datanode
+
+python3 /app/app.py

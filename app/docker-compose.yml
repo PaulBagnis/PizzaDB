@@ -16,11 +16,17 @@ services:
       - ./hadoop.env
 
   datanode:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    build:
+      context: ./
+      dockerfile: datanode/Dockerfile
     container_name: datanode
     restart: always
+    ports:
+      - 5000:5000
     volumes:
       - hadoop_datanode:/hadoop/dfs/data
+      - ./images:/home
+      - ./api:/app
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
