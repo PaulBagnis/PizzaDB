@@ -31,9 +31,9 @@ class TwitterClient(object):
                 '_index': 'twitter',
                 '_id': tweet.id_str,
                 '_source': {
-                    'data': tweet.created_at,
-                    'text': tweet.text,
-                    'polarity': self.sa.calculatePolarity_baseFive(tweet.text),
+                    'date': tweet.created_at,
+                    'text': tweet.full_text,
+                    'polarity': self.sa.calculatePolarity_baseFive(tweet.full_text),
                     'nombre_retweet': tweet.retweet_count,
                     'nombre_like': tweet.favorite_count
                 }

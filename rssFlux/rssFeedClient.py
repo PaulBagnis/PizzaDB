@@ -40,9 +40,9 @@ class RSSFeedClient(object):
                 '_id': article['id'],
                 '_source': {
                     'title': article['title'],
-                    'summary': article['summary'],
+                    'text': article['summary'],
                     'polarity': self.sa.calculatePolarity_baseFive(article['summary']),
-                    'published': article['published_parsed']
+                    'date': article['published_parsed']
                 }
             })
         self.db.insertData(actions)
