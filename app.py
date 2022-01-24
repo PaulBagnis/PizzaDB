@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
+
 __authors__ = ("Guern Francois", "Bagnis Paul", "Takoutsink Jerry")
 __email__ = ("francois.guern@ynov.com", "paul.bagnis@ynov.com", "jerry.takoutsing@ynov.com")
 __copyright__ = "MIT"
 __date__ = "2022-01-28"
 __version__= "0.1.0"
-__status__ = "Devlopement"
-# ---------------------------------------------------------------------------
+__status__ = "Development"
+
 """ Details about the module and for what purpose it was built for """
-# ---------------------------------------------------------------------------
+
 from tools.elasticSearch import ElasticSearchClient
 from tools.sentimentAnalysis import SentimentAnalysis
 from feeds.twitterClient import TwitterClient
 from feeds.rssClient import RSSClient
-# ---------------------------------------------------------------------------
 
 
 def main():
