@@ -6,13 +6,24 @@ import ssl
 
 class RSSClient(object):
     def __init__(self, db, sa, urls={}):
+        """ 
+        DESC :
+
+        IN   :  
+        OUT  : 
+        """
         self.db = db
         self.sa = sa
         self.urls = urls
 
-    # Argument : - url : endpoint of the RSS feed we are going to fetch
-    # Returns the RSS feed and handles certificates problems when fetching feed
+    
     def getFeed(self, url):
+        """ 
+        DESC :
+
+        IN   :  - url : endpoint of the RSS feed we are going to fetch
+        OUT  : json containing RSS feed infos
+        """
         feed = parse(url)
         try:
             if isinstance(feed.bozo_exception, URLError):
@@ -23,16 +34,26 @@ class RSSClient(object):
         return feed
 
     def addSources(self, urls):
+        """ 
+        DESC :
+
+        IN   :  
+        OUT  : 
+        """
         self.urls.update(urls)
 
-    # Argument : - source : name of the index
-    #            - articles : array of RSS articles to insert in DB
-    # Does the bulk inserts in ElasticSearch DB
     def insertDb(self, source, articles):
+        """ 
+        DESC : Does bulk inserts in ElasticSearch DB
+
+        IN   : source - name of the index
+               articles - array of RSS articles to insert in DB
+        OUT  : 
+        """
         actions = []
         for article in articles:
             # Test if article is in HTML format, if yes, parses via parsingHtml function
-            if bool(BeautifulSoup(article['summary'], 'html.parser').find()):
+            if BeautifulSoup(article['summary'], 'html.parser').find():
                 article['summary'] = self.parsingHtml(article['summary'])
             actions.append({
                 '_index': source,
@@ -47,26 +68,43 @@ class RSSClient(object):
         self.db.insertData(actions)
 
     def deleteDb(self):
+        """ 
+        DESC :
+
+        IN   :  
+        OUT  : 
+        """
         for source, _ in self.urls.items():
             self.db.deleteData(source)
 
-    # Argument : - index : the name of the Elasticsearch index
-    #            - newId : id from the RSS article to search in Db
-    # Returns True if Article already exists in ElastcSearch index, False if don't
-    # Makes shure we don't insert the same article twice
     def alreadyExists(self, index, newID):
+        """ 
+        DESC : Makes shure we don't insert the same article twice
+
+        IN   : index - the name of the Elasticsearch index
+               newId - id from the RSS article to search in Db
+        OUT  : True if Article already exists in ElastcSearch index, False if don't
+        """
         try:
             return self.db.ifExist(index, newID)['hits']['total']['value']
         except:
             return False
 
-    # Argument : - content : content from article that contains HTML
-    # Returns only the main text from article without any HTML tag
     def parsingHtml(self, content):
+        """ 
+        DESC : Returns only the main text from article without any HTML tag
+
+        IN   : content - content from article that contains HTML
+        OUT  : 
+        """
         return BeautifulSoup(content, 'lxml').find_all('p')[0].text.split(' - ')[1]
 
-    # Main function, looping on RSS endpoints to fetch data and insert it in our ElasticSearch database
     def getArticlesFromRSS(self):
+        """ 
+        DESC :  Main function, looping on RSS endpoints to fetch data and insert it in our ElasticSearch database
+        IN   : 
+        OUT  : 
+        """
         feed = []
         for source, url in self.urls.items():
             nbOfNewArticles = 0
@@ -84,5 +122,10 @@ class RSSClient(object):
         return feed
 
     def pushNewArticles(self):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         for source, articles in self.getArticlesFromRSS():
             self.insertDb(source, articles)

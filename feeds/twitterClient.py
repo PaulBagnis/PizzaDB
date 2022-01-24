@@ -5,6 +5,11 @@ from polyglot.detect import Detector
 
 class TwitterClient(object):
     def __init__(self, db, sentimentModule, supported_languages=None):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         self.db = db
         self.sa = sentimentModule
 
@@ -26,6 +31,11 @@ class TwitterClient(object):
             self.supported_languages = ['en']
 
     def insertDb(self, tweets):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         actions = []
         for tweet in tweets:
             actions.append({
@@ -42,9 +52,19 @@ class TwitterClient(object):
         self.db.insertData(actions)
 
     def deleteDb(self):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         return self.db.deleteData('twitter')
 
     def getTweets(self, query, count=10):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         tweets = []
         try:
             for tweet in Cursor(self.api.search_tweets, q=query, 
@@ -61,7 +81,17 @@ class TwitterClient(object):
             print('Error : ' + str(e))
 
     def pushNewTweets(self, query, count):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         return self.insertDb(self.getTweets(query, count))
 
     def setSupportedLanguages(self, removed_languages):
+        """ 
+        DESC :
+        IN   :  
+        OUT  : 
+        """
         self.supported_languages = removed_languages
