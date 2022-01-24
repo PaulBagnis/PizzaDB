@@ -5,7 +5,7 @@ from polyglot.detect import Detector
 
 class SentimentAnalysis(object):
     def __init__(self):
-        pass
+        self.supported_languages=['es', 'pt', 'it', 'fr', 'de', 'en']
 
 
     def calculatePolarity(self, text):
@@ -22,11 +22,16 @@ class SentimentAnalysis(object):
         text = text.replace('RT : ', '').replace('RT ', '')                         # Remove RT mention
         text = text.replace('#', '').replace('\n', '.').replace('_', ' ')           # Remove useless characters
         text = sub(r'(?<!^)(?=[A-Z])', ' ', text)                                   # Convert camelcase to standart format
-        try:
-            language=Detector(text).language.code                                   # Find the language
-        except:
-            language='en'                                                           # If no language is found set it to 'english'
-        text= demojize(text, language=language).replace(':', '').replace('_', ' ')  # Convert emoji to clear string
+        text = self.handleEmoji(text)
         text = ' '.join(w for w in text.split(' ') if w)                            # clear spacing
         return text
 
+    def handleEmoji(self, text):
+        try:
+            text= sub(r':([A-Za-z0-9_]*):', '', demojize(text))                             # remove emojis
+            language=Detector(text).language.code                                           # Find the language
+            if language in self.supported_languages:
+                return demojize(text, language=language).replace(':', '').replace('_', ' ') # Convert emoji to clear string
+        except:
+            pass
+        return text
