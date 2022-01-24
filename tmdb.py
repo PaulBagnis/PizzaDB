@@ -7,7 +7,7 @@ from sys import platform
 # choix d'un movie
 # récupération et stockage de l'affiche dans HDFS
 
-tmdb.API_KEY = "678b941591dc9bdb6ec1352563253fdd"
+tmdb.API_KEY = '678b941591dc9bdb6ec1352563253fdd'
 tmdb.REQUESTS_TIMEOUT = 5
 tmdb.REQUESTS_SESSION = requests.Session()
 
@@ -16,14 +16,13 @@ tmdb.REQUESTS_SESSION = requests.Session()
 # Test id directory exists in working directory, if not, creates it
 def testDirOrCreate(name):
     if not (os.path.isdir(name)):
-        path = os.path.join("\\", os.getcwd(), name)
+        path = os.path.join('\\', os.getcwd(), name)
         try:
             os.mkdir(path)
-            print("./app/images directory created")
+            print('./app/images directory created')
         except:
-            print(
-                "Failed to create ./app/images directory, please launch in administrator privileges"
-            )
+            print('Failed to create ./app/images directory,'
+                  'please launch in administrator privileges')
 
 # Argument : - movies : array
 # Test id directory exists in working directory, if not, creates it
@@ -37,16 +36,16 @@ def movieMenu(movies):
 
 # Clears console depending on operating system
 def clearConsole():
-    if platform == "win32":
-        os.system("cls")
+    if platform == 'win32':
+        os.system('cls')
     else:
-        os.system("clear")
+        os.system('clear')
 
 
 tmdbMovies = tmdb.Movies()
 nowPlaying = tmdbMovies.now_playing()
-movies = [movie["original_title"] for movie in nowPlaying["results"]]
+movies = [movie['original_title'] for movie in nowPlaying['results']]
 clearConsole()
 print(movieMenu(movies))
 
-testDirOrCreate("images")
+testDirOrCreate('images')

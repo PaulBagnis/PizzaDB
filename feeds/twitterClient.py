@@ -2,6 +2,7 @@ from tweepy import OAuthHandler, API, Cursor
 from tweepy.errors import TweepyException
 from polyglot.detect import Detector
 
+
 class TwitterClient(object):
     def __init__(self, db, sentimentModule, supported_languages=None):
         self.db = db
@@ -18,11 +19,11 @@ class TwitterClient(object):
             self.api = API(self.auth)
         except:
             print('Error: Authentication Failed')
-        
+
         if supported_languages:
-            self.supported_languages=supported_languages
+            self.supported_languages = supported_languages
         else:
-            self.supported_languages=['en']
+            self.supported_languages = ['en']
 
     def insertDb(self, tweets):
         actions = []
@@ -35,19 +36,21 @@ class TwitterClient(object):
                     'text': tweet.full_text,
                     'polarity': self.sa.calculatePolarity_baseFive(tweet.full_text),
                     'nombre_retweet': tweet.retweet_count,
-                    'nombre_like': tweet.favorite_count
-                }
+                    'nombre_like': tweet.favorite_count,
+                },
             })
         self.db.insertData(actions)
-        
+
     def deleteDb(self):
         return self.db.deleteData('twitter')
 
     def getTweets(self, query, count=10):
         tweets = []
         try:
-            for tweet in Cursor(self.api.search_tweets, q=query, tweet_mode='extended').items(count):
-                if Detector(tweet.full_text, quiet=True).language.code in self.supported_languages:
+            for tweet in Cursor(self.api.search_tweets, q=query, 
+                            tweet_mode='extended').items(count):
+                language=Detector(tweet.full_text, quiet=True).language.code
+                if language in self.supported_languages:
                     if tweet.retweet_count:
                         if tweet not in tweets:
                             tweets.append(tweet)
