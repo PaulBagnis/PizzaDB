@@ -19,6 +19,7 @@ def main():
     # rss_feed.pushNewArticles()
 
     twitter_feed = TwitterClient(es, sa)
+    twitter_feed.setSupportedLanguages(['es', 'pt', 'it', 'fr', 'de', 'en'])
     twitter_feed.deleteDb()
     twitter_feed.pushNewTweets(query = 'Dune', count = 100)
 

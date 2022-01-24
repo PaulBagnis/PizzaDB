@@ -1,8 +1,7 @@
 from textblob import TextBlob
-from re import sub, compile, UNICODE
-from emoji import UNICODE_EMOJI
-from nltk import wordpunct_tokenize
-
+from re import sub
+from emoji import demojize
+from polyglot.detect import Detector
 
 class SentimentAnalysis(object):
     def __init__(self):
@@ -18,9 +17,16 @@ class SentimentAnalysis(object):
 
 
     def clean(self, text):
-        text = sub("@[A-Za-z0-9]+","",text) #Remove @ sign
-        text = sub(r"(?:\@|http?\://|https?\://|www)\S+", "", text) #Remove http links
-        text = text.split()
-        text = ' '.join(c for c in text if c not in UNICODE_EMOJI) #Remove Emojis
-        text = text.replace("#", "").replace("_", " ") #Remove hashtag sign but keep the text
+        text = sub(r'(?:\@|http?\://|https?\://|www)\S+', '', text)                 # Remove web links
+        text = sub('@[A-Za-z0-9_]+','', text)                                       # Remove user links
+        text = text.replace('RT : ', '').replace('RT ', '')                         # Remove RT mention
+        text = text.replace('#', '').replace('\n', '.').replace('_', ' ')           # Remove useless characters
+        text = sub(r'(?<!^)(?=[A-Z])', ' ', text)                                   # Convert camelcase to standart format
+        try:
+            language=Detector(text).language.code                                   # Find the language
+        except:
+            language='en'                                                           # If no language is found set it to 'english'
+        text= demojize(text, language=language).replace(':', '').replace('_', ' ')  # Convert emoji to clear string
+        text = ' '.join(w for w in text.split(' ') if w)                            # clear spacing
         return text
+
