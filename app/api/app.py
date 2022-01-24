@@ -1,22 +1,32 @@
 from flask import Flask
 import os
+import time
 
 app = Flask(__name__)
-MAX_RETRIES = 5
+MAX_RETRIES = 30
 
-@app.route('/createHDFSDir')
+
+@app.route("/createHDFSDir")
 def createHDFSDir():
-   exitCode = str(os.system("hdfs dfs -mkdir /FilmPosters"))
-   return exitCode
+    nbOfTries = 0
+    while str(os.system("hdfs dfs -mkdir /FilmPosters")) != "256":
+        if nbOfTries == MAX_RETRIES:
+            return "0"
+        time.sleep(1)
+        nbOfTries += 1
+    return "256"
 
-@app.route('/loadToHDFS')
+
+@app.route("/loadToHDFS")
 def loadToHDFS():
-   exitCode = str(os.system("hdfs dfs -copyFromLocal /home/*.jpg /FilmPosters"))
-   return exitCode
+    nbOfTries = 0
+    while str(os.system("hdfs dfs -copyFromLocal /home/*.jpg /FilmPosters")) != "256":
+        if nbOfTries == MAX_RETRIES:
+            return "0"
+        time.sleep(1)
+        nbOfTries += 1
+    return "256"
 
-# shell2http.register_command(endpoint="createHDFSDir", command_name="hdfs dfs -mkdir /FilmPosters")
-# shell2http.register_command(endpoint="loadToHDFS", command_name="hdfs dfs -copyFromLocal /home/*.jpg /FilmPosters")
 
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0') 
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")

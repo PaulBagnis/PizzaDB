@@ -5,6 +5,7 @@ from sys import platform
 from alphabet_detector import AlphabetDetector
 import docker
 import time
+
 # récupération et stockage de l'affiche dans HDFS
 
 tmdb.API_KEY = "678b941591dc9bdb6ec1352563253fdd"
@@ -18,10 +19,13 @@ dockerClient = docker.from_env()
 # Argument : - container_name: the name of the container
 # Verify the status of a container by it's name, return True if running
 def isContainerRunning(containerName: str):
-    try :
-        if dockerClient.inspect_container(containerName)['State']['Status'] == 'running':
+    try:
+        if (
+            dockerClient.inspect_container(containerName)["State"]["Status"]
+            == "running"
+        ):
             return True
-        else :
+        else:
             return False
     except:
         return False
@@ -33,7 +37,7 @@ def isDockerRunning(dockerComposeCommand, restart=False):
     while True:
         try:
             dockerStatus = isContainerRunning("datanode")
-            if not(dockerCompose) or restart:
+            if not (dockerCompose) or restart:
                 os.system(dockerComposeCommand)
                 dockerCompose, restart == True, False
             if dockerStatus:
@@ -78,6 +82,14 @@ def printMenu(inputMessage, menu):
     return input(inputMessage)
 
 
+def reqToDocker(url: str):
+    response = requests.get(url)
+    if response.text == "256":
+        print("\tZEPARTIIII")
+    else:
+        print("\tSomething went wrong ¯\_(ツ)_/¯")
+
+
 ############################
 #                          #
 #      MAIN FUNCTION       #
@@ -85,7 +97,7 @@ def printMenu(inputMessage, menu):
 ############################
 
 os.system(clearSyntaxe)
-
+testDirOrCreate("images")
 isDockerRunning("docker-compose up -d", False)
 
 tmdbMovies = tmdb.Movies()
@@ -123,9 +135,8 @@ while True:
         )
 
 # Query film's image and save it /images directory
-testDirOrCreate("images")
 os.system(clearSyntaxe)
-currentMovie = tmdb.Movies(nowPlaying["results"][int(movieChoice)-1]["id"])
+currentMovie = tmdb.Movies(nowPlaying["results"][int(movieChoice) - 1]["id"])
 imgUrl = (
     "https://www.themoviedb.org/t/p/w600_and_h900_bestv2"
     + currentMovie.info()["poster_path"]
@@ -133,10 +144,10 @@ imgUrl = (
 imgPath = os.path.join(
     "\\",
     os.path.join("\\", os.getcwd(), "images"),
-    str(nowPlaying["results"][int(movieChoice)-1]["id"]) + ".jpg",
+    str(nowPlaying["results"][int(movieChoice) - 1]["id"]) + ".jpg",
 )
 
-if not(os.path.exists(imgPath)):
+if not (os.path.exists(imgPath)):
     with open(imgPath, "wb") as handle:
         response = requests.get(imgUrl, stream=True)
         if not response.ok:
@@ -146,16 +157,15 @@ if not(os.path.exists(imgPath)):
                 break
             handle.write(block)
 
-#  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
-print('\n\n\tCreating HDFS directory\n\n')
-response = requests.get("http://localhost:5000/createHDFSDir")
-print(response)
 
-print('\n\n\tLoading to HDFS\n\n')
-response = requests.get("http://localhost:5000/loadToHDFS")
-print(response)
-test=input('ok ?')
-# NON
+#  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
+print("\n\n\tCreating HDFS directory\n")
+reqToDocker("http://localhost:5000/createHDFSDir")
+
+print("\n\n\tLoading to HDFS\n")
+reqToDocker("http://localhost:5000/loadToHDFS")
+
+test = input("ok ?")
 
 # print([method_name for method_name in dir(dockerClient) if callable(getattr(dockerClient, method_name))])
 # containerImage = dockerClient.containers.get('datanode')['Config']['Image']
