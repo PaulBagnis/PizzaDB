@@ -4,14 +4,17 @@ from polyglot.detect import Detector
 
 
 class TwitterClient(object):
-    def __init__(self, db, sentimentModule, supported_languages=None):
+    def __init__(self, db, sentimentModule, supported_languages=['en']):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : initiate varibles and set-up the tweepy class for later usage
+
+        IN   :  db - database where infos are going to be saved
+                sa - sentiment analysis class analyse our string
+                supported_language - only fetch certain languages (used for emoji conversion) (default is english) 
         """
         self.db = db
         self.sa = sentimentModule
+        self.supported_languages = supported_languages
 
         consumer_key = 'n4QQQaLtC70dsi54adwRuFMCW'
         consumer_secret = 'GrsLdf2drgLFkT8FpFzPeLrBrFTFlHY4LN6h7EiVamY7GefiHE'
@@ -25,16 +28,12 @@ class TwitterClient(object):
         except:
             print('Error: Authentication Failed')
 
-        if supported_languages:
-            self.supported_languages = supported_languages
-        else:
-            self.supported_languages = ['en']
-
     def insertDb(self, tweets):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : format tweet infos before sending them to the db
+
+        IN   : array of dict containing every infos about their tweet 
+        OUT  : array of sorted provided dict 
         """
         actions = []
         for tweet in tweets:
@@ -53,17 +52,17 @@ class TwitterClient(object):
 
     def deleteDb(self):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : ask the ElasticSearch db to delete every entries that came from twitter 
         """
         return self.db.deleteData('twitter')
 
     def getTweets(self, query, count=10):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : download every tweets that match our query then keep only the ones that have the supported languages 
+
+        IN   :  query - search input to fetch tweets
+                count - number of tweet to download ( default is 10 )
+        OUT  : array of dictionnary containing tweet infos
         """
         tweets = []
         try:
@@ -82,16 +81,18 @@ class TwitterClient(object):
 
     def pushNewTweets(self, query, count):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : fetch tweets before sending formeted version of them to the DB
+
+        IN   :  query - search input to fetch tweets
+                count - number of tweet to download ( default is 10 )
+        OUT  : result of the request
         """
         return self.insertDb(self.getTweets(query, count))
 
-    def setSupportedLanguages(self, removed_languages):
+    def setSupportedLanguages(self, language):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : basicd setter method
+
+        IN   :  language - new supported language
         """
-        self.supported_languages = removed_languages
+        self.supported_languages = language

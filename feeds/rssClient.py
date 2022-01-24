@@ -5,23 +5,24 @@ import ssl
 
 
 class RSSClient(object):
-    def __init__(self, db, sa, urls={}):
+    def __init__(self, db, sentimentModule, urls={}):
         """ 
-        DESC :
+        DESC : basic init function
 
-        IN   :  
-        OUT  : 
+        IN   :  db - database where infos are going to be saved
+                sa - sentiment analysis class analyse our string
+                urls - sources where infos are going to be fetched
         """
         self.db = db
-        self.sa = sa
+        self.sa = sentimentModule
         self.urls = urls
 
     
     def getFeed(self, url):
         """ 
-        DESC :
+        DESC : connect to the rss feed and return full data
 
-        IN   :  - url : endpoint of the RSS feed we are going to fetch
+        IN   : url - endpoint of the RSS feed we are going to fetch
         OUT  : json containing RSS feed infos
         """
         feed = parse(url)
@@ -35,20 +36,18 @@ class RSSClient(object):
 
     def addSources(self, urls):
         """ 
-        DESC :
+        DESC : simple function to add new RSS sources 
 
-        IN   :  
-        OUT  : 
+        IN   : urls - array of dictionnaries with sourcename and url 
         """
         self.urls.update(urls)
 
     def insertDb(self, source, articles):
         """ 
-        DESC : Does bulk inserts in ElasticSearch DB
+        DESC : create a array of dict then send them to the ElasticSearch DB
 
         IN   : source - name of the index
                articles - array of RSS articles to insert in DB
-        OUT  : 
         """
         actions = []
         for article in articles:
@@ -69,10 +68,7 @@ class RSSClient(object):
 
     def deleteDb(self):
         """ 
-        DESC :
-
-        IN   :  
-        OUT  : 
+        DESC : ask the ElasticSearch db to delete every entries that as the same source as this function 
         """
         for source, _ in self.urls.items():
             self.db.deleteData(source)
@@ -83,7 +79,7 @@ class RSSClient(object):
 
         IN   : index - the name of the Elasticsearch index
                newId - id from the RSS article to search in Db
-        OUT  : True if Article already exists in ElastcSearch index, False if don't
+        OUT  : True if the article already exist, False if it don't
         """
         try:
             return self.db.ifExist(index, newID)['hits']['total']['value']
@@ -94,16 +90,16 @@ class RSSClient(object):
         """ 
         DESC : Returns only the main text from article without any HTML tag
 
-        IN   : content - content from article that contains HTML
-        OUT  : 
+        IN   : content - HTML content
+        OUT  : raw text
         """
         return BeautifulSoup(content, 'lxml').find_all('p')[0].text.split(' - ')[1]
 
     def getArticlesFromRSS(self):
         """ 
-        DESC :  Main function, looping on RSS endpoints to fetch data and insert it in our ElasticSearch database
-        IN   : 
-        OUT  : 
+        DESC : looping on RSS endpoints to fetch data
+        
+        OUT  : array of dict containing RSS sources's datas 
         """
         feed = []
         for source, url in self.urls.items():
@@ -123,9 +119,7 @@ class RSSClient(object):
 
     def pushNewArticles(self):
         """ 
-        DESC :
-        IN   :  
-        OUT  : 
+        DESC : Main function, that get RSS data before sending them to the DB 
         """
         for source, articles in self.getArticlesFromRSS():
             self.insertDb(source, articles)
