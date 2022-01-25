@@ -15,7 +15,7 @@ CLEAR_SYNTAXE = 'cls' if platform == 'win32' else 'clear'
 
 
 tmdbMovies = tmdb.Movies()
-# dockerClient = docker.from_env()
+dockerClient = docker.from_env()
 
 
 def isContainerRunning(container_name):
@@ -53,35 +53,6 @@ def isDockerRunning(dockerComposeCommand='docker-compose up -d', restart=False):
         time.sleep(5)
 
 
-def testDirOrCreate(name):
-    """
-    DESC : Test id directory exists in working directory, if not, creates it
-
-    IN   : name - directory's name
-    """
-    if not os.path.isdir(name):
-        path = os.path.join('\\', os.getcwd(), name)
-        try:
-            os.mkdir(path)
-            print('./app/images directory created')
-        except:
-            print('Failed to create ./app/images directory, please launch in administrator privileges')
-
-
-def movieMenu(movies, warning=''):
-    """
-    DESC : Display a list of movies to choose from
-
-    IN   : movies - list to be displayed
-           warning - an additionnal str to warn wrong inputs (default is null)
-    OUT  : the position of the choosen movie
-    """
-    os.system(CLEAR_SYNTAXE)
-    print('\n\n\tList of available movies :\n\n'
-          '\n'.join('\t{} : {}'.format(p, title) for p, title in enumerate(movies)))
-    return int(input('What movie do you want info on ?\n{} > '.format(warning)))
-
-
 def reqToDocker(url):
     """
     DESC : send request to the docker API
@@ -94,43 +65,69 @@ def reqToDocker(url):
         print('\tSomething went wrong ¯\_(ツ)_/¯')
 
 
-############################
-#                          #
-#      MAIN FUNCTION       #
-#                          #
-############################
+def testDirOrCreate(name):
+    """
+    DESC : Test id directory exists in working directory, if not, creates it
+
+    IN   : name - directory's name
+    """
+    if not os.path.isdir(name):
+        try:
+            os.mkdir(os.path.join('\\', os.getcwd(), name))
+            print('../images directory created')
+        except:
+            print('Failed to create ../images directory, please launch in administrator privileges')
+
+
+def movieMenu(now_playing):
+    """
+    DESC : Display a list of movies to choose from
+
+    IN   : now_playing - list of recent movies
+    OUT  : the position of the choosen movie
+    """
+    warning=''
+    while True:
+        os.system(CLEAR_SYNTAXE)
+        print('\n\nList of available movies :\n')
+        for p, movie in enumerate(now_playing):
+            if AlphabetDetector().only_alphabet_chars(movie['original_title'], 'LATIN'):
+                print('{} : {}'.format(p, movie['original_title']))
+
+        choice = input('\nWhat movie do you want info on ?\n{} > '.format(warning))
+
+        # Test if choice is an Integer in the range of the menu
+        if choice.isnumeric():
+            if 0 <= int(choice) <= p:
+                return int(choice)
+            else:
+                warning='An existing one this time...\n'
+        else:
+            warning='A number will work great too...\n'
+     
 
 
 # testDirOrCreate('images')
 # isDockerRunning(False)
 
 
-nowPlaying = tmdbMovies.now_playing()
-movies = [movie['original_title'] for movie in nowPlaying['results'] if AlphabetDetector().only_alphabet_chars(movie['original_title'], 'LATIN')]
-
-
-movieChoice = movieMenu(movies)
-# Test if choice is an Integer in the range of the menu
-while 1 <= movieChoice <= len(movies):
-    movieChoice = movieMenu(movies, '( An existing one this time )\n')
-
-
-# Query film's image and save it /images directory
-movieId=nowPlaying['results'][movieChoice]['id']
-imgUrl = 'https://www.themoviedb.org/t/p/w600_and_h900_bestv2'+tmdb.Movies(movieId).info()['poster_path']
-imgPath = os.path.join(os.getcwd(), 'images', str(movieId) + '.jpg')
+now_playing = tmdbMovies.now_playing()['results']
+movie_id=now_playing[movieMenu(now_playing)]['id']
+imgPath = os.path.join(os.getcwd(), 'images', str(movie_id) + '.jpg')
 
 if not os.path.exists(imgPath):
     with open(imgPath, 'wb') as file:
-        response = requests.get(imgUrl, stream=True)
+        response = requests.get(
+            'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/'+tmdb.Movies(movie_id).info()['poster_path'], 
+            stream=True
+        )
         if not response.ok:
             print('Failed to get image from Movie. Please try again ¯\_(ツ)_/¯')
         for block in response.iter_content(1024):
-            if not block:
-                break
+            if not block: break
             file.write(block)
 
-#  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
+# #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
 # print('\n\n\tCreating HDFS directory\n')
 # reqToDocker('http://localhost:5000/createHDFSDir')
 
