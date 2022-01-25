@@ -28,18 +28,21 @@ from feeds.tmdbClient import TMDbClient
 from feeds.rssClient import RSSClient
 from tools.elasticSearch import ElasticSearchClient
 from tools.sentimentAnalysis import SentimentAnalysis
+from docker.app import DockerManager
 
 TWITTER_MAX_FETCH = 100
 
 def main():
-    # es = ElasticSearchClient()
-    # sa = SentimentAnalysis()
-
+    es = ElasticSearchClient()
+    sa = SentimentAnalysis()
     rss_urls = {
         'allocinesemaine': 'http://rss.allocine.fr/ac/cine/cettesemaine',
         'allocineaffiche': 'http://rss.allocine.fr/ac/cine/alaffiche',
         'screenrant': 'https://screenrant.com/feed/',
     }
+
+    dockerManager = DockerManager()
+    dockerManager.isDockerRunning()
 
     tmdb_feed = TMDbClient()
     movie_id, movie_title = tmdb_feed.movieMenu()
@@ -54,6 +57,10 @@ def main():
     rss_feed.addSources(rss_urls)
     rss_feed.deleteDb()
     rss_feed.pushNewArticles()
+    
+    #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
+    dockerManager.reqToDocker('createHDFSDir')
+    dockerManager.reqToDocker('loadToHDFS')
 
 if __name__ == '__main__':
     main()

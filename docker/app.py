@@ -48,9 +48,7 @@ class DockerManager(object):
             time.sleep(5)
 
     def reqToDocker(self, endpoint):
-        #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
-        # reqToDocker('createHDFSDir')
-        # reqToDocker('loadToHDFS')
+
         """
         DESC : send request to the docker API
 
@@ -61,6 +59,5 @@ class DockerManager(object):
         else:
             print('\tSomething went wrong ¯\_(ツ)_/¯')
 
-# isDockerRunning()
 
 
