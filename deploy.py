@@ -50,7 +50,7 @@ print("\t######################\n\tDocker Started")
 # Start of ElasticSearch
 print("\tStarting ElasticSearch\n\t######################\n")
 startES()
-print("\t#####################\n\tElasticSearch Started#####################")
+print("\t#####################\n\tElasticSearch Started\n\t#####################")
 
 input('\n\tDeployment done. Press a key and type "python app.py" to enjoy app')
 
