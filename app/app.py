@@ -60,7 +60,9 @@ def testDirOrCreate(name):
             print("./app/" + str(name) + " directory created")
         except:
             print(
-                "Failed to create ./app/" + str(name) + " directory, please launch in administrator privileges"
+                "Failed to create ./app/"
+                + str(name)
+                + " directory, please launch in administrator privileges"
             )
 
 
@@ -92,12 +94,13 @@ def reqToDocker(url: str):
     else:
         print("\tSomething went wrong ¯\_(ツ)_/¯")
 
+
 # Argument : - string: string of char
 # cleans string reserved chars to create directory
-def clearStr(string : str):
+def clearStr(string: str):
     forbiddenChars = '<>:"/(|?*'
     for element in forbiddenChars:
-        string.replace(element, '')
+        string.replace(element, "")
     return string
 
 
@@ -186,22 +189,36 @@ except:
 os.system(clearSyntaxe)
 
 print("\n\n\tRetrieving from HDFS\n")
-reqToDocker("http://localhost:5000/pullFromHDFS/" + str(nowPlaying["results"][int(movieChoice) - 1]["id"]))
+reqToDocker(
+    "http://localhost:5000/pullFromHDFS/"
+    + str(nowPlaying["results"][int(movieChoice) - 1]["id"])
+)
 
 # Creating Directory to put image on local if not exists
 
-movieTitle = re.sub(r'[^\w\-_\. ]', '', nowPlaying["results"][int(movieChoice) - 1]["original_title"])
+movieTitle = re.sub(
+    r"[^\w\-_\. ]", "", nowPlaying["results"][int(movieChoice) - 1]["original_title"]
+)
 print(movieTitle)
 test = input("ok ?")
 movieId = nowPlaying["results"][int(movieChoice) - 1]["id"]
 
 testDirOrCreate("results")
-testDirOrCreate("results/" +  movieTitle)
+testDirOrCreate("results/" + movieTitle)
 time.sleep(1)
-os.rename("images/" + str(movieId) + ".jpg", "results/" + movieTitle + "/" + movieTitle + " Poster.jpg")
+os.rename(
+    "images/" + str(movieId) + ".jpg",
+    "results/" + movieTitle + "/" + movieTitle + " Poster.jpg",
+)
 
 # Final screen
 
 os.system(clearSyntaxe)
-print("\n\n\tYou can see the results in " + os.getcwd() + "\\results\\" + movieTitle + "\n\n")
+print(
+    "\n\n\tYou can see the results in "
+    + os.getcwd()
+    + "\\results\\"
+    + movieTitle
+    + "\n\n"
+)
 print("\n\n\tEnjoy !!")
