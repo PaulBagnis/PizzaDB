@@ -5,6 +5,7 @@ from sys import platform
 from alphabet_detector import AlphabetDetector
 import docker
 import time
+import re
 
 # récupération et stockage de l'affiche dans HDFS
 
@@ -56,10 +57,10 @@ def testDirOrCreate(name):
         path = os.path.join("\\", os.getcwd(), name)
         try:
             os.mkdir(path)
-            print("./app/images directory created")
+            print("./app/" + str(name) + " directory created")
         except:
             print(
-                "Failed to create ./app/images directory, please launch in administrator privileges"
+                "Failed to create ./app/" + str(name) + " directory, please launch in administrator privileges"
             )
 
 
@@ -82,12 +83,22 @@ def printMenu(inputMessage, menu):
     return input(inputMessage)
 
 
+# Argument : - url: endpoint of docker API
+# Sends requests to docker API to execute HDFS commands
 def reqToDocker(url: str):
     response = requests.get(url)
     if response.text == "256":
         print("\tZEPARTIIII")
     else:
         print("\tSomething went wrong ¯\_(ツ)_/¯")
+
+# Argument : - string: string of char
+# cleans string reserved chars to create directory
+def clearStr(string : str):
+    forbiddenChars = '<>:"/(|?*'
+    for element in forbiddenChars:
+        string.replace(element, '')
+    return string
 
 
 ############################
@@ -165,9 +176,32 @@ reqToDocker("http://localhost:5000/createHDFSDir")
 print("\n\n\tLoading to HDFS\n")
 reqToDocker("http://localhost:5000/loadToHDFS")
 
-test = input("ok ?")
+try:
+    if os.path.exists(imgPath):
+        os.remove(imgPath)
+except:
+    print("\n\n\tError while deleting file\n", imgPath)
 
-# print([method_name for method_name in dir(dockerClient) if callable(getattr(dockerClient, method_name))])
-# containerImage = dockerClient.containers.get('datanode')['Config']['Image']
-# print(dockerClient.get_image())
-# isDockerRunning("docker-compose up --build -d", True)
+# Requesting image from HDFS
+os.system(clearSyntaxe)
+
+print("\n\n\tRetrieving from HDFS\n")
+reqToDocker("http://localhost:5000/pullFromHDFS/" + str(nowPlaying["results"][int(movieChoice) - 1]["id"]))
+
+# Creating Directory to put image on local if not exists
+
+movieTitle = re.sub(r'[^\w\-_\. ]', '', nowPlaying["results"][int(movieChoice) - 1]["original_title"])
+print(movieTitle)
+test = input("ok ?")
+movieId = nowPlaying["results"][int(movieChoice) - 1]["id"]
+
+testDirOrCreate("results")
+testDirOrCreate("results/" +  movieTitle)
+time.sleep(1)
+os.rename("images/" + str(movieId) + ".jpg", "results/" + movieTitle + "/" + movieTitle + " Poster.jpg")
+
+# Final screen
+
+os.system(clearSyntaxe)
+print("\n\n\tYou can see the results in " + os.getcwd() + "\\results\\" + movieTitle + "\n\n")
+print("\n\n\tEnjoy !!")
