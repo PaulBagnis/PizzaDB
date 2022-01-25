@@ -28,7 +28,7 @@ from feeds.tmdbClient import TMDbClient
 from feeds.rssClient import RSSClient
 from tools.elasticSearch import ElasticSearchClient
 from tools.sentimentAnalysis import SentimentAnalysis
-from docker.app import DockerManager
+from dockers.app import DockerManager
 
 TWITTER_MAX_FETCH = 100
 

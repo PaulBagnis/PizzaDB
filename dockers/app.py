@@ -43,7 +43,7 @@ class DockerManager(object):
                 if self.isContainerRunning('datanode'):
                     break
             except:
-                print(self.isContainerRunning('datanode') + '\n\n\tPlease run docker before lauching program\n\n')
+                print('\n\n\tPlease run docker before lauching program\n\n')
                 quit()
             time.sleep(5)
 

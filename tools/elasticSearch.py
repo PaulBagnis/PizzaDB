@@ -40,3 +40,12 @@ class ElasticSearchClient(object):
         OUT  : result of the request
         """
         return self.esClient.indices.delete(index=index, ignore=[400, 404])
+
+    def clearAllCache(self):
+        """ 
+        DESC : Delete cache by index (list, comma separated)
+        
+        IN   : index - that will cache be cleared from
+        OUT  : result of the request
+        """
+        return self.esClient.indices.clear_cache(self.esClient)

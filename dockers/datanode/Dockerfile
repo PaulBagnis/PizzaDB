@@ -8,7 +8,7 @@ HEALTHCHECK CMD curl -f http://localhost:9864/ || exit 1
 ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data
 RUN apt-get update && apt-get install -y \
-    python3.6 \
+    python3 \
     python3-pip
 RUN pip3 install flask
 VOLUME /hadoop/dfs/data
