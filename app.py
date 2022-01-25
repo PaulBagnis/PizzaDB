@@ -23,15 +23,17 @@ NewRSS -> Every now and then new articles are posted on their respective website
 In term of database we use MongoDB (https://www.mongodb.com/), Elasticsearch (https://www.elastic.co/) and as we said before  HDFS (https://hadoop.apache.org/).
 """
 
+from feeds.twitterClient import TwitterClient
+from feeds.tmdbClient import TMDbClient
+from feeds.rssClient import RSSClient
 from tools.elasticSearch import ElasticSearchClient
 from tools.sentimentAnalysis import SentimentAnalysis
-from feeds.twitterClient import TwitterClient
-from feeds.rssClient import RSSClient
 
+TWITTER_MAX_FETCH = 100
 
 def main():
-    es = ElasticSearchClient()
-    sa = SentimentAnalysis()
+    # es = ElasticSearchClient()
+    # sa = SentimentAnalysis()
 
     rss_urls = {
         'allocinesemaine': 'http://rss.allocine.fr/ac/cine/cettesemaine',
@@ -39,16 +41,19 @@ def main():
         'screenrant': 'https://screenrant.com/feed/',
     }
 
-    rss_feed = RSSClient(es, sa)
-    rss_feed.addSources(rss_urls)
-    rss_feed.deleteDb()
-    rss_feed.pushNewArticles()
+    tmdb_feed = TMDbClient()
+    movie_id, movie_title = tmdb_feed.movieMenu()
+    tmdb_feed.downloadPic(movie_id)
 
     twitter_feed = TwitterClient(es, sa)
     twitter_feed.setSupportedLanguages(sa.supported_languages)
     twitter_feed.deleteDb()
-    twitter_feed.pushNewTweets(query='movies', count=100)
+    twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
 
+    rss_feed = RSSClient(es, sa)
+    rss_feed.addSources(rss_urls)
+    rss_feed.deleteDb()
+    rss_feed.pushNewArticles()
 
 if __name__ == '__main__':
     main()
