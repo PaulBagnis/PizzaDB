@@ -8,7 +8,7 @@ import os
 if platform == 'win32':
     ELASTIC_SEARCH_START = "C:\\Program Files\\elasticsearch-7.16.2\\bin\\elasticsearch.bat"
 else:
-    ELASTIC_SEARCH_START = 'systemctl stop elasticsearch.service'
+    ELASTIC_SEARCH_START = 'systemctl restart elasticsearch.service'
 MAX_RETRY=6
 
 class ElasticSearchClient(object):
@@ -33,7 +33,7 @@ class ElasticSearchClient(object):
             count = 0
             while count <= MAX_RETRY:
                 try: 
-                    if get("http://localhost:9200/") == 200:
+                    if get("http://localhost:9200/").status_code == 200:
                         print("\tElasticSearch started !\n")
                         break
                     else:

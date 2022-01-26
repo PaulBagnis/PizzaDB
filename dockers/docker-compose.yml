@@ -25,7 +25,7 @@ services:
       - 5000:5000
     volumes:
       - hadoop_datanode:/hadoop/dfs/data
-      - ./images:/home
+      - ../images:/home
       - ./api:/app
     environment:
       SERVICE_PRECONDITION: "namenode:9870"

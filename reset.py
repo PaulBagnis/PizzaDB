@@ -20,8 +20,8 @@ def reset():
 
     os.chdir("./dockers")
     dockerManager = DockerManager()
-    os.chdir("../")
     dockerManager.start(True)
+    os.chdir("../")
     dockerManager.deleteHDFSDirectory()
     
 

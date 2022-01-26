@@ -1,4 +1,5 @@
 from pywebhdfs.webhdfs import PyWebHdfsClient
+from sys import platform
 import requests
 import docker
 import time
@@ -6,7 +7,7 @@ import os
 
 
 class DockerManager(object):
-    def __init__(self, api_url='http://localhost:9870', host='localhost', port='9870'):
+    def __init__(self, api_url='http://localhost:5000', host='localhost', port='9870'):
         """
         DESC : create a docker client from the dockerfile locate on the same directory level
 
@@ -36,8 +37,10 @@ class DockerManager(object):
         IN   : rebuild - rebuild docker containers (default: false)
         OUT  : return True if it's running, else False
         """
-        print("Docker Strating...")
+        print("Docker Starting...")
         rebuild = '--build' if rebuild else ''
+        sudo = 'sudo' if platform == 'linux' else ''
+
         while True:
             try:
                 if rebuild:

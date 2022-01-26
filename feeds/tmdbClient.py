@@ -76,6 +76,7 @@ class TMDbClient(object):
                     if not block: break
                     file.write(block)
             return 1
+        return 1
 
     def deletePicDir(self):
         """
