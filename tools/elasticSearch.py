@@ -1,5 +1,15 @@
 from elasticsearch import helpers, Elasticsearch, NotFoundError
+from requests.exceptions import ConnectionError
+from requests import get
+from sys import platform
+from time import sleep
+import os
 
+if platform == 'win32':
+    ELASTIC_SEARCH_START = "C:\\Program Files\\elasticsearch-7.16.2\\bin\\elasticsearch.bat"
+else:
+    ELASTIC_SEARCH_START = 'systemctl stop elasticsearch.service'
+MAX_RETRY=6
 
 class ElasticSearchClient(object):
     def __init__(self):
@@ -7,6 +17,34 @@ class ElasticSearchClient(object):
         DESC : badic init methode, initialize ES Client for later usage 
         """
         self.esClient = Elasticsearch()
+
+    def start(self):
+        """ 
+        DESC : Launch the process
+        OUT  : Returns True if it already exists, False if it don't
+        """
+        try:
+            response = get("http://localhost:9200/")
+        except ConnectionError:
+            response = None
+        if not(response):
+            print("ElasticSearch Strating...")
+            os.system(ELASTIC_SEARCH_START)
+            count = 0
+            while count <= MAX_RETRY:
+                try: 
+                    if get("http://localhost:9200/") == 200:
+                        print("\tElasticSearch started !\n")
+                        break
+                    else:
+                        print("\tFailed to connect to ElasticSearch, next attempt in 5 seconds...\n")
+                        sleep(5)
+                        count += 1
+                except ConnectionError:
+                    pass
+            if count == MAX_RETRY:
+                print("\tFailed to connect to ElasticSearch Database, quiting.... !\n")
+                quit()
 
     def ifExist(self, index, newID):
         """ 
