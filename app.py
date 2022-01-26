@@ -59,7 +59,7 @@ def main():
     rss_feed.pushNewArticles()
     
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
-    dockerManager.reqToDocker('createHDFSDir')
+    dockerManager.createHDFSDirectory()
     dockerManager.reqToDocker('loadToHDFS')
 
 if __name__ == '__main__':

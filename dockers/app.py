@@ -1,3 +1,4 @@
+from pywebhdfs.webhdfs import PyWebHdfsClient
 import requests
 import docker
 import time
@@ -5,7 +6,7 @@ import os
 
 
 class DockerManager(object):
-    def __init__(self, api_url='http://localhost:5000/'):
+    def __init__(self, api_url='http://localhost:9870', host='localhost', port='9870'):
         """
         DESC : create a docker client from the dockerfile locate on the same directory level
 
@@ -13,6 +14,7 @@ class DockerManager(object):
         """
         self.docker_client = docker.from_env()
         self.api_docker_base_url = api_url
+        self.hdfs = PyWebHdfsClient(host=host,port=port, user_name=None)
 
     def isContainerRunning(self, container_name):
         """
@@ -47,8 +49,30 @@ class DockerManager(object):
                 quit()
             time.sleep(5)
 
-    def reqToDocker(self, endpoint):
 
+    def createHDFSDirectory(self):
+        """
+        DESC : send request to create directory in HDFS
+        """
+        try :
+            self.hdfs.make_dir('/FilmPosters')
+            print('HDFS directory created !')
+        except requests.exceptions.ConnectionError :
+            print('Impossible to create HDFS Directory')
+
+
+    def deleteHDFSDirectory(self):
+        """
+        DESC : send request to delete directory in HDFS
+        """
+        try :
+            requests.delete("http://localhost:9870/webhdfs/v1/FilmPosters?op=DELETE&recursive=true")
+            print('HDFS directory deleted !')
+        except requests.exceptions.ConnectionError :
+            print('Deletion of HDFS directory failed.')
+
+
+    def reqToDocker(self, endpoint):
         """
         DESC : send request to the docker API
 

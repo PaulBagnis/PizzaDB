@@ -8,11 +8,6 @@ MAX_RETRIES = 30
 app = Flask(__name__)
 
 
-@app.route('/createHDFSDir')
-def createHDFSDir():
-    return execFunction('hdfs dfs -mkdir /FilmPosters')
-
-
 @app.route('/loadToHDFS')
 def loadToHDFS():
     return execFunction('hdfs dfs -copyFromLocal /home/*.jpg /FilmPosters')

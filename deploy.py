@@ -19,17 +19,20 @@ def startES():
     """
     os.startfile(os.path.normpath(PATH_TO_ELASTIC_SEARCH_BAT))
     count = 0
-    while count < MAX_RETRIES:
-        response = requests.get("http://localhost:27017/")
-        if response.status_code == 200:
-            print("\tElasticSearch started !\n")
-            break
-        else:
-            print(
-                "\tFailed to connect to ElasticSearch, next attempt in 10 seconds...\n"
-            )
-            time.sleep(10)
-            count += 1
+    while count <= MAX_RETRIES:
+        try:
+            response = requests.get("http://localhost:9200/")
+            if response.status_code == 200:
+                print("\tElasticSearch started !\n")
+                break
+            else:
+                print(
+                    "\tFailed to connect to ElasticSearch, next attempt in 10 seconds...\n"
+                )
+                time.sleep(10)
+                count += 1
+        except requests.exceptions.ConnectionError :
+            pass
     if count == MAX_RETRIES:
         print("\tFailed to connect to ElasticSearch Database, try again you sheep !\n")
 
