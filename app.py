@@ -23,6 +23,7 @@ NewRSS -> Every now and then new articles are posted on their respective website
 In term of database we use MongoDB (https://www.mongodb.com/), Elasticsearch (https://www.elastic.co/) and as we said before  HDFS (https://hadoop.apache.org/).
 """
 
+
 import os
 
 from feeds.twitterClient import TwitterClient
@@ -49,7 +50,7 @@ def main():
     os.chdir("./dockers")
     dockerManager = DockerManager()
     os.chdir("../")
-    dockerManager.isDockerRunning()
+    dockerManager.start()
 
     tmdb_feed = TMDbClient()
     movie_id, movie_title = tmdb_feed.movieMenu()

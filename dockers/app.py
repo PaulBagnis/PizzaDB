@@ -29,23 +29,24 @@ class DockerManager(object):
             print('Error :' + e)
             return False
 
-    def isDockerRunning(self, dockerComposeCommand='docker-compose up -d', restart=False):
+    def start(self, rebuild=False, restart=False):
         """
         DESC : Check if docker and Hadoop image are running
 
-        IN   : dockerComposeCommand - command to execute to check (default: docker-compose up -d)
+        IN   : rebuild - rebuild docker containers (default: false)
         OUT  : return True if it's running, else False
         """
         print("Docker Strating...")
-        dockerCompose = False
+        rebuild = '--build' if rebuild else ''
         while True:
             try:
-                if not(dockerCompose) or restart:
-                    os.system(dockerComposeCommand)
-                    dockerCompose, restart == True, False
+                if rebuild:
+                    os.system('docker-compose up {} -d'.format(rebuild))
+                    rebuild == False
                 if self.isContainerRunning('datanode'):
                     break
-            except:
+            except Exception as e:
+                print('Error :' + e)
                 print('\n\n\tPlease run docker before lauching program\n\n')
                 quit()
             time.sleep(5)

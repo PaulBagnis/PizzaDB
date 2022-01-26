@@ -15,7 +15,7 @@ def deploy():
     os.chdir("./dockers")
     dockerManager = DockerManager()
     os.chdir("../")
-    dockerManager.isDockerRunning("docker-compose up --build -d")
+    dockerManager.start(True)
     
     os.system(CLEAR_SYNTAXE)
     input("\n\n \
