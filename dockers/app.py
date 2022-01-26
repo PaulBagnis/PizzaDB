@@ -36,6 +36,7 @@ class DockerManager(object):
         IN   : dockerComposeCommand - command to execute to check (default: docker-compose up -d)
         OUT  : return True if it's running, else False
         """
+        print("Docker Strating...")
         dockerCompose = False
         while True:
             try:
@@ -48,6 +49,7 @@ class DockerManager(object):
                 print('\n\n\tPlease run docker before lauching program\n\n')
                 quit()
             time.sleep(5)
+        print("Docker Started !")
 
 
     def createHDFSDirectory(self):
