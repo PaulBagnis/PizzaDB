@@ -16,13 +16,13 @@ class TwitterClient(object):
         self.sa = sentimentModule
         self.supported_languages = supported_languages
 
-        consumer_key = 'n4QQQaLtC70dsi54adwRuFMCW'
-        consumer_secret = 'GrsLdf2drgLFkT8FpFzPeLrBrFTFlHY4LN6h7EiVamY7GefiHE'
-        access_token = '1377622154683019265-wB6k2RuIfNGcth52wDEO6bGPnzyXYw'
-        access_token_secret = '8RTqizUFIrmg7LAAawJXDwZF7w1qHoPdypvpIRYd6ji5B'
+        api_key = 'lQQaJPtSdyKab6zyi03lHSanu'
+        api_key_secret = 'texLfA0KI0VW428WMiPW5motO0z8PURFKvrJz0amktmGd0c3yK'
+        access_token = '1377622154683019265-RnmvsG8dt06VAdOvlcHhEaYZs6lVD0'
+        access_token_secret = 'SvWonpPDxsE3hNUfj2lrPjEvGb2Xj61tiJMWon0EKdEeg'
 
         try:
-            self.auth = OAuthHandler(consumer_key, consumer_secret)
+            self.auth = OAuthHandler(api_key, api_key_secret)
             self.auth.set_access_token(access_token, access_token_secret)
             self.api = API(self.auth)
         except:
