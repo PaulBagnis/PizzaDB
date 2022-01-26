@@ -4,12 +4,12 @@ from polyglot.detect import Detector
 
 
 class TwitterClient(object):
-    def __init__(self, db, sentimentModule, supported_languages=['en']):
+    def __init__(self, db, sentimentModule=None, supported_languages=['en']):
         """ 
         DESC : initiate varibles and set-up the tweepy class for later usage
 
         IN   :  db - database where infos are going to be saved
-                sa - sentiment analysis class analyse our string
+                sentimentModule - sentiment analysis class analyse our string
                 supported_language - only fetch certain languages (used for emoji conversion) (default is english) 
         """
         self.db = db
@@ -37,13 +37,14 @@ class TwitterClient(object):
         """
         actions = []
         for tweet in tweets:
+            pol = self.sa.calculatePolarity_baseFive(tweet.full_text) if self.sa else 'n/a'
             actions.append({
                 '_index': 'twitter',
                 '_id': tweet.id_str,
                 '_source': {
                     'date': tweet.created_at,
                     'text': tweet.full_text,
-                    'polarity': self.sa.calculatePolarity_baseFive(tweet.full_text),
+                    'polarity': pol,
                     'nombre_retweet': tweet.retweet_count,
                     'nombre_like': tweet.favorite_count,
                 },

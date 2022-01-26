@@ -5,19 +5,18 @@ import ssl
 
 
 class RSSClient(object):
-    def __init__(self, db, sentimentModule, urls={}):
+    def __init__(self, db, sentimentModule=None, urls={}):
         """ 
         DESC : basic init function
 
         IN   :  db - database where infos are going to be saved
-                sa - sentiment analysis class analyse our string
+                sentimentModule - sentiment analysis module analyse our string
                 urls - sources where infos are going to be fetched
         """
         self.db = db
         self.sa = sentimentModule
         self.urls = urls
-
-    
+  
     def getFeed(self, url):
         """ 
         DESC : connect to the rss feed and return full data
@@ -51,6 +50,7 @@ class RSSClient(object):
         """
         actions = []
         for article in articles:
+            pol = self.sa.calculatePolarity_baseFive(article['summary']) if self.sa else 'n/a'
             # Test if article is in HTML format, if yes, parses via parsingHtml function
             if BeautifulSoup(article['summary'], 'html.parser').find():
                 article['summary'] = self.parsingHtml(article['summary'])
@@ -60,7 +60,7 @@ class RSSClient(object):
                 '_source': {
                     'title': article['title'],
                     'text': article['summary'],
-                    'polarity': self.sa.calculatePolarity_baseFive(article['summary']),
+                    'polarity': pol,
                     'date': article['published_parsed'],
                 },
             })
