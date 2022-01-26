@@ -77,4 +77,16 @@ class TMDbClient(object):
                     file.write(block)
             return 1
 
+    def deletePicDir(self):
+        """
+        DESC : Delete the directory used to store downloaded pictures
+
+        OUT  : 0|1 success or not
+        """
+        if os.path.isdir(self.img_dir_path):
+            for pic in os.listdir(self.img_dir_path):
+                os.remove('{}/{}'.format(self.img_dir_path, pic))
+            return os.rmdir(self.img_dir_path)
+        else:
+            return 0
 
