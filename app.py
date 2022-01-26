@@ -23,6 +23,8 @@ NewRSS -> Every now and then new articles are posted on their respective website
 In term of database we use MongoDB (https://www.mongodb.com/), Elasticsearch (https://www.elastic.co/) and as we said before  HDFS (https://hadoop.apache.org/).
 """
 
+import os
+
 from feeds.twitterClient import TwitterClient
 from feeds.tmdbClient import TMDbClient
 from feeds.rssClient import RSSClient
@@ -30,32 +32,35 @@ from tools.elasticSearch import ElasticSearchClient
 from tools.sentimentAnalysis import SentimentAnalysis
 from dockers.app import DockerManager
 
+
 TWITTER_MAX_FETCH = 100
 
+
 def main():
-    es = ElasticSearchClient()
-    sa = SentimentAnalysis()
+    elasticSearchClient = ElasticSearchClient()
+    sentimentAnalysis = SentimentAnalysis()
+
     rss_urls = {
         'allocinesemaine': 'http://rss.allocine.fr/ac/cine/cettesemaine',
         'allocineaffiche': 'http://rss.allocine.fr/ac/cine/alaffiche',
         'screenrant': 'https://screenrant.com/feed/',
     }
 
+    os.chdir("./dockers")
     dockerManager = DockerManager()
+    os.chdir("../")
     dockerManager.isDockerRunning()
 
     tmdb_feed = TMDbClient()
     movie_id, movie_title = tmdb_feed.movieMenu()
     tmdb_feed.downloadPic(movie_id)
 
-    twitter_feed = TwitterClient(es, sa)
-    twitter_feed.setSupportedLanguages(sa.supported_languages)
-    twitter_feed.deleteDb()
+    twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
+    twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
     twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
 
-    rss_feed = RSSClient(es, sa)
+    rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
     rss_feed.addSources(rss_urls)
-    rss_feed.deleteDb()
     rss_feed.pushNewArticles()
     
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
