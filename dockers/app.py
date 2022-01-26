@@ -26,8 +26,7 @@ class DockerManager(object):
         """
         try:
             return self.docker_client.inspect_container(container_name)['State']['Status'] == 'running'
-        except Exception as e:
-            print('Error :' + e)
+        except docker.errors.APIError:
             return False
 
     def start(self, rebuild=False, restart=False):
@@ -42,16 +41,12 @@ class DockerManager(object):
         sudo = 'sudo' if platform == 'linux' else ''
 
         while True:
-            try:
-                if rebuild:
-                    os.system('docker-compose up {} -d'.format(rebuild))
-                    rebuild == False
-                if self.isContainerRunning('datanode'):
-                    break
-            except Exception as e:
-                print('Error :' + e)
-                print('\n\n\tPlease run docker before lauching program\n\n')
-                quit()
+            if rebuild:
+                # os.system('{} docker-compose up {} -d'.format(sudo, rebuild))
+                os.popen('sudo docker-compose up --build -d').read()
+                rebuild == False
+            if self.isContainerRunning('datanode'):
+                break
             time.sleep(5)
         print("Docker Started !")
 
@@ -84,7 +79,7 @@ class DockerManager(object):
 
         IN   : url - endpoint
         """
-        if requests.get(self.api_docker_base_url + endpoint) == '256': 
+        if requests.get('{}/{}'.format(self.api_docker_base_url, endpoint)) == '256': 
             print('\tZEPARTIIII')
         else:
             print('\tSomething went wrong ¯\_(ツ)_/¯')
