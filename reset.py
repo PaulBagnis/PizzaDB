@@ -19,6 +19,14 @@ def reset():
 
 
     dockerManager = DockerManager()
+    dockerManager.removeContainers(('datanode', 'historyserver', 'namenode', 'nodemanager', 'resourcemanager'))
+    dockerManager.removeImages(('dockers_datanode:latest', 
+                                'bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8',
+                                'bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8',
+                                'bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8',
+                                'bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8',
+                                'bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8',
+    ))
     dockerManager.start(1, 'dockers')
     dockerManager.deleteHDFSDirectory()
     

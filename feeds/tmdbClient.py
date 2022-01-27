@@ -31,7 +31,7 @@ class TMDbClient(object):
                         if AlphabetDetector().only_alphabet_chars(movie['original_title'], 'LATIN')]
         warning=''
         while True:
-            os.system(CLEAR_SYNTAXE)
+            # os.system(CLEAR_SYNTAXE)
             print('\n\nList of available movies :\n')
             for p, movie in enumerate(movie_list):
                 print('{} : {}'.format(p, movie['original_title']))
@@ -51,7 +51,7 @@ class TMDbClient(object):
         DESC : Download a movie poster based on his ID
 
         IN   : movie_id - id of the movie that we'll download
-        OUT  : 0|1 success or not
+        OUT  : file path
         """
         # Test if directory exists in working directory, if not, creates it
         if not os.path.isdir(self.img_dir_path):
@@ -75,8 +75,8 @@ class TMDbClient(object):
                 for block in response.iter_content(1024):
                     if not block: break
                     file.write(block)
-            return 1
-        return 1
+            return img_path
+        return img_path
 
     def deletePicDir(self):
         """

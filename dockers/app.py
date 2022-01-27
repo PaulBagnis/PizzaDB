@@ -96,6 +96,23 @@ class DockerManager(object):
             print('Pic send to the HDFS folder !')
             return os.remove(pic_path)
         else:
-            print('upload failed')
             return 0
 
+    def removeContainers(self, containers=()):
+        for container_name in containers:
+            try:
+                print('Removing container: {}...'.format(container_name))
+                self.docker_client.stop(container_name)
+                self.docker_client.remove_container(container_name)
+            except docker.errors.NotFound:
+                pass
+        print('Every provided containers have been removed !')
+
+    def removeImages(self, images=()):
+        for image_name in images:
+            try:
+                print('Removing image: {}...'.format(image_name))
+                self.docker_client.remove_image(image_name)
+            except docker.errors.NotFound:
+                pass
+        print('Every provided images have been removed !')
