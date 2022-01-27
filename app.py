@@ -52,7 +52,7 @@ def main():
 
     tmdb_feed = TMDbClient()
     movie_id, movie_title = tmdb_feed.movieMenu()
-    pic_path = tmdb_feed.downloadPic(920143)
+    pic_path = tmdb_feed.downloadPic(movie_id)
 
     # twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
     # twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
@@ -63,8 +63,9 @@ def main():
     # rss_feed.pushNewArticles()
     
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
-    dockerManager.createHDFSDirectory()
+    dockerManager.createHDFSDirectory() 
     dockerManager.picToHDFS(pic_path)
+    dockerManager.pullHDFS(movie_id, movie_title)
 
 if __name__ == '__main__':
     main()

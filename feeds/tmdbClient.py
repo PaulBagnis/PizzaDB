@@ -1,6 +1,7 @@
 import tmdbsimple as tmdb
 import requests
 import os
+import re
 from alphabet_detector import AlphabetDetector
 from sys import platform
 
@@ -40,7 +41,7 @@ class TMDbClient(object):
             if choice.isnumeric():
                 choice=int(choice)
                 if 0 <= choice <= p:
-                    return movie_list[choice]['id'], movie_list[choice]['original_title']
+                    return movie_list[choice]['id'], re.sub(r'[^\w\-\. ]', '', movie_list[choice]['original_title'])
                 else:
                     warning='An existing one this time...\n'
             else:

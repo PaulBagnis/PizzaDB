@@ -11,10 +11,13 @@ app = Flask(__name__)
 
 @app.route('/loadToHDFS')
 def loadToHDFS():
-    return execFunction('hdfs dfs -put /home/*.jpg /FilmPosters/ | grep \'File exists\|sasl.SaslDataTransferClient\'')
+    return executeCommand('hdfs dfs -put /home/*.jpg /FilmPosters/ | grep \'File exists\|sasl.SaslDataTransferClient\'')
 
+@app.route("/pullFromHDFS/<int:id>")
+def pullFromHDFS(id):
+    return executeCommand("hdfs dfs -copyToLocal /FilmPosters/{}.jpg /home | grep \'File exists\|sasl.SaslDataTransferClient\'".format(id))
 
-def execFunction(cmd):
+def executeCommand(cmd):
     nbOfTries = 0
     while not os.system(cmd):
         time.sleep(1)
