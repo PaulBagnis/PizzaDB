@@ -50,10 +50,10 @@ class RSSClient(object):
         """
         actions = []
         for article in articles:
-            pol = self.sa.calculatePolarity_baseFive(article['summary']) if self.sa else 'n/a'
             # Test if article is in HTML format, if yes, parses via parsingHtml function
             if BeautifulSoup(article['summary'], 'html.parser').find():
                 article['summary'] = self.parsingHtml(article['summary'])
+            pol = self.sa.calculatePolarity_baseFive(article['summary']) if self.sa else 'n/a'
             actions.append({
                 '_index': source,
                 '_id': article['id'],
