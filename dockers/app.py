@@ -45,6 +45,7 @@ class DockerManager(object):
             if not starting:
                 os.chdir(path_docker_compose)
                 os.popen('{} docker-compose up {} -d'.format(sudo, rebuild)).read()
+                os.chdir('../')
                 rebuild == False
                 starting == True
             if self.isContainerRunning('datanode'):
@@ -116,3 +117,11 @@ class DockerManager(object):
             except docker.errors.NotFound:
                 pass
         print('Every provided images have been removed !')
+    def pullHDFS(self, movie_id, movie_title):
+        print("Retrieving from HDFS...")
+        if self.reqToDocker("pullFromHDFS/{}".format(movie_id)):
+            print("Download successful !")
+            return os.rename("images/{}.jpg".format(movie_id), "results/{}.jpg".format(movie_title))
+        else:
+            print("Download failed !")
+            return 0

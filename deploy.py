@@ -12,9 +12,7 @@ def deploy():
     elasticSearchClient.start()
 
     # Starts Docker
-    os.chdir("./dockers")
     dockerManager = DockerManager()
-    os.chdir("../")
     dockerManager.start(True)
     
     os.system(CLEAR_SYNTAXE)
