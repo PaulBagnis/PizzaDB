@@ -47,26 +47,24 @@ def main():
         'screenrant': 'https://screenrant.com/feed/',
     }
 
-    os.chdir("./dockers")
     dockerManager = DockerManager()
-    os.chdir("../")
-    dockerManager.start()
+    dockerManager.start(1, 'dockers')
 
     tmdb_feed = TMDbClient()
     movie_id, movie_title = tmdb_feed.movieMenu()
-    tmdb_feed.downloadPic(movie_id)
+    pic_path = tmdb_feed.downloadPic(920143)
 
-    twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
-    twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
-    twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
+    # twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
+    # twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
+    # twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
 
-    rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
-    rss_feed.addSources(rss_urls)
-    rss_feed.pushNewArticles()
+    # rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
+    # rss_feed.addSources(rss_urls)
+    # rss_feed.pushNewArticles()
     
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
     dockerManager.createHDFSDirectory()
-    dockerManager.reqToDocker('loadToHDFS')
+    dockerManager.picToHDFS(pic_path)
 
 if __name__ == '__main__':
     main()

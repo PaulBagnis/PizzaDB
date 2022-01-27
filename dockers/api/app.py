@@ -1,4 +1,5 @@
 from flask import Flask
+import json
 import os
 import time
 
@@ -10,16 +11,17 @@ app = Flask(__name__)
 
 @app.route('/loadToHDFS')
 def loadToHDFS():
-    return execFunction('hdfs dfs -copyFromLocal /home/*.jpg /FilmPosters')
+    return execFunction('hdfs dfs -put /home/*.jpg /FilmPosters/ | grep \'File exists\|sasl.SaslDataTransferClient\'')
 
 
 def execFunction(cmd):
     nbOfTries = 0
-    while str(os.system(cmd)) != 256:
+    while not os.system(cmd):
         time.sleep(1)
         nbOfTries += 1
-        if nbOfTries == MAX_RETRIES: return 0
-    return 256
+        if nbOfTries == MAX_RETRIES:
+            return json.dumps(False)
+    return json.dumps(True)
 
 
 if __name__ == '__main__':
