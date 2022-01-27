@@ -2,7 +2,7 @@ from pywebhdfs.webhdfs import PyWebHdfsClient
 from sys import platform
 import requests
 import docker
-import time
+from time import sleep
 import os
 
 
@@ -29,25 +29,29 @@ class DockerManager(object):
         except docker.errors.APIError:
             return False
 
-    def start(self, rebuild=False, restart=False):
+    def start(self, rebuild=False, path_docker_compose='./'):
         """
         DESC : Check if docker and Hadoop image are running
 
         IN   : rebuild - rebuild docker containers (default: false)
+               path - path to docker-compose (default: ./)
         OUT  : return True if it's running, else False
         """
         print("Docker Starting...")
         rebuild = '--build' if rebuild else ''
         sudo = 'sudo' if platform == 'linux' else ''
-
+        starting = False
         while True:
-            if rebuild:
-                # os.system('{} docker-compose up {} -d'.format(sudo, rebuild))
-                os.popen('sudo docker-compose up --build -d').read()
+            if not starting:
+                os.chdir(path_docker_compose)
+                os.popen('{} docker-compose up {} -d'.format(sudo, rebuild)).read()
                 rebuild == False
+                starting == True
             if self.isContainerRunning('datanode'):
                 break
-            time.sleep(5)
+            else:
+                print("\tFailed to connect to Docker, next attempt in 5 seconds...\n")
+                sleep(5)
         print("Docker Started !")
 
 
@@ -81,7 +85,6 @@ class DockerManager(object):
         """
         try:
             if requests.get('{}/{}'.format(self.api_docker_base_url, endpoint)): 
-        else:
                 return True
             else:
                 return False
