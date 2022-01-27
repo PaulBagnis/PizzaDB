@@ -18,10 +18,8 @@ def reset():
     TMDbClient().deletePicDir()
 
 
-    os.chdir("./dockers")
     dockerManager = DockerManager()
-    dockerManager.start(True)
-    os.chdir("../")
+    dockerManager.start(1, 'dockers')
     dockerManager.deleteHDFSDirectory()
     
 
