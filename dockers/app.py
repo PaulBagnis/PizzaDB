@@ -79,10 +79,20 @@ class DockerManager(object):
 
         IN   : url - endpoint
         """
-        if requests.get('{}/{}'.format(self.api_docker_base_url, endpoint)) == '256': 
-            print('\tZEPARTIIII')
+        try:
+            if requests.get('{}/{}'.format(self.api_docker_base_url, endpoint)): 
         else:
-            print('\tSomething went wrong ¯\_(ツ)_/¯')
-
-
+                return True
+            else:
+                return False
+        except requests.exceptions.ConnectionError:
+            print('Request failed, is your server running ?')
+        
+    def picToHDFS(self, pic_path):
+        if self.reqToDocker('loadToHDFS'):
+            print('Pic send to the HDFS folder !')
+            return os.remove(pic_path)
+        else:
+            print('upload failed')
+            return 0
 
