@@ -5,9 +5,6 @@ from feeds.rssClient import RSSClient
 from tools.elasticSearch import ElasticSearchClient
 from dockers.app import DockerManager
 
-from sys import platform
-import os
-
 
 def reset():
     elasticSearchClient = ElasticSearchClient()
