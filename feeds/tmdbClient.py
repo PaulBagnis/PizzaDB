@@ -41,7 +41,7 @@ class TMDbClient(object):
             if choice.isnumeric():
                 choice=int(choice)
                 if 0 <= choice <= p:
-                    return movie_list[choice]['id'], re.sub(r'[^\w\-\. ]', '', movie_list[choice]['original_title'])
+                    return movie_list[choice]['id'], re.sub(r'[^\w\-\. ]', '_', movie_list[choice]['original_title'])
                 else:
                     warning='An existing one this time...\n'
             else:

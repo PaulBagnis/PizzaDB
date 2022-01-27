@@ -24,7 +24,7 @@ In term of database we use MongoDB (https://www.mongodb.com/), Elasticsearch (ht
 """
 
 
-import os
+import numpy
 
 from feeds.twitterClient import TwitterClient
 from feeds.tmdbClient import TMDbClient
@@ -55,17 +55,31 @@ def main():
     pic_path = tmdb_feed.downloadPic(movie_id)
 
     # twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
-    # twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
-    # twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
+    twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
+    twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
+    twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
 
-    # rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
-    # rss_feed.addSources(rss_urls)
-    # rss_feed.pushNewArticles()
+    rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
+    rss_feed.addSources(rss_urls)
+    rss_feed.pushNewArticles()
     
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
     dockerManager.createHDFSDirectory() 
     dockerManager.picToHDFS(pic_path)
     dockerManager.pullHDFS(movie_id, movie_title)
+
+    # polarity mean by source
+    data = elasticSearchClient.getData(movie_title)['hits']['hits']
+    if data:
+        polarities={}
+        for hit in data:
+            if not hit['_index'] in polarities:
+                polarities[hit['_index']]=[hit['_source']['polarity']]
+            else:
+                polarities[hit['_index']].append(hit['_source']['polarity'])
+        print('Calculating polarity of sources...')
+        for key, value in polarities.items(): 
+            print('{} : {}'.format(key, format(numpy.array(value).mean(), '.1f')))
 
 if __name__ == '__main__':
     main()

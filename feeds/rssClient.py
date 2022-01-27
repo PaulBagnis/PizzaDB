@@ -81,10 +81,8 @@ class RSSClient(object):
                newId - id from the RSS article to search in Db
         OUT  : True if the article already exist, False if it don't
         """
-        try:
-            return self.db.ifExist(index, newID)['hits']['total']['value']
-        except:
-            return False
+        return self.db.ifExist(index, newID)
+
 
     def parsingHtml(self, content):
         """ 
@@ -103,15 +101,12 @@ class RSSClient(object):
         """
         feed = []
         for source, url in self.urls.items():
-            nbOfNewArticles = 0
             articles = []
             for entry in self.getFeed(url).entries:
-                if self.alreadyExists(source, entry['id']):
-                    break
-                articles.append(entry)
+                if not self.alreadyExists(source, entry['id']):
+                   articles.append(entry)
             if articles:
-                nbOfNewArticles += len(articles)
-                print('{} new articles added in {}\'s index !'.format(nbOfNewArticles, source))
+                print('{} new articles added in {}\'s index !'.format(len(articles), source))
                 feed.append((source, articles))
             else:
                 print('No new article found in {}\'s index !'.format(source))

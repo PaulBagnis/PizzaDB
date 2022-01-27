@@ -46,7 +46,7 @@ class ElasticSearchClient(object):
                 print("\tFailed to connect to ElasticSearch Database, quiting.... !\n")
                 quit()
 
-    def ifExist(self, index, newID):
+    def ifExist(self, index, id):
         """ 
         DESC : Makes shure we don't insert the same row twice 
 
@@ -55,9 +55,7 @@ class ElasticSearchClient(object):
         OUT  : Returns True if it already exists, False if it don't
         """
         try:
-            return self.esClient.search(
-                index=index, query={'bool': {'must': {'match': {'id': newID}}}}
-            )
+            return self.esClient.get(index=index, id=id)
         except NotFoundError:
             return False
 
@@ -87,3 +85,6 @@ class ElasticSearchClient(object):
         OUT  : result of the request
         """
         return self.esClient.indices.clear_cache(self.esClient)
+
+    def getData(self, query):
+        return self.esClient.search(index='*', query={"query_string": {"query": query}}, size=1000)
