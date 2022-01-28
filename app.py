@@ -25,61 +25,54 @@ In term of database we use MongoDB (https://www.mongodb.com/), Elasticsearch (ht
 
 
 import numpy
+from pymongo import MongoClient
+from sys import platform
+import os
 
-from feeds.twitterClient import TwitterClient
 from feeds.tmdbClient import TMDbClient
-from feeds.rssClient import RSSClient
 from tools.elasticSearch import ElasticSearchClient
-from tools.sentimentAnalysis import SentimentAnalysis
 from dockers.app import DockerManager
 
-
-TWITTER_MAX_FETCH = 100
+CLEAR_SYNTAXE = 'cls' if platform == 'win32' else 'clear'
 
 
 def main():
     elasticSearchClient = ElasticSearchClient()
-    sentimentAnalysis = SentimentAnalysis()
-
-    rss_urls = {
-        'allocinesemaine': 'http://rss.allocine.fr/ac/cine/cettesemaine',
-        'allocineaffiche': 'http://rss.allocine.fr/ac/cine/alaffiche',
-        'screenrant': 'https://screenrant.com/feed/',
-    }
 
     dockerManager = DockerManager()
     dockerManager.start(1, 'dockers')
 
     tmdb_feed = TMDbClient()
-    movie_id, movie_title = tmdb_feed.movieMenu()
-    pic_path = tmdb_feed.downloadPic(movie_id)
-
-    # twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
-    twitter_feed = TwitterClient(elasticSearchClient, sentimentAnalysis)
-    twitter_feed.setSupportedLanguages(sentimentAnalysis.supported_languages)
-    twitter_feed.pushNewTweets(query=movie_title, count=TWITTER_MAX_FETCH)
-
-    rss_feed = RSSClient(elasticSearchClient, sentimentAnalysis)
-    rss_feed.addSources(rss_urls)
-    rss_feed.pushNewArticles()
-    
+    input('ENTER')
+    os.system(CLEAR_SYNTAXE)
+    movie_id, movie_title, movie_notation = tmdb_feed.movieMenu()
     #  Saving image on HDFS (commands in Dockerfile, restarting container since /images binded to /hadoop/dfs/data)
-    dockerManager.createHDFSDirectory() 
-    dockerManager.picToHDFS(pic_path)
     dockerManager.pullHDFS(movie_id, movie_title)
 
     # polarity mean by source
     data = elasticSearchClient.getData(movie_title)['hits']['hits']
+    polarities={'tmdb': movie_notation}
+    input('ENTER')
+    os.system(CLEAR_SYNTAXE)
     if data:
-        polarities={}
         for hit in data:
             if not hit['_index'] in polarities:
                 polarities[hit['_index']]=[hit['_source']['polarity']]
             else:
                 polarities[hit['_index']].append(hit['_source']['polarity'])
         print('Calculating polarity of sources...')
-        for key, value in polarities.items(): 
-            print('{} : {}'.format(key, format(numpy.array(value).mean(), '.1f')))
+        for key, value in polarities.items():
+            polarities[key] = format(numpy.array(value).mean(), '.1f')
+            print('{} : {}'.format(key, polarities[key]))
+        print('{}.jpg'.format(movie_title))
+
+    client = MongoClient('localhost', 27017)# Create new index
+    client.db.projetBDD.insert_one({
+        '_id': movie_id,
+        'title': movie_title,
+        'polaritiesSource': polarities,
+        'path_pic': '{}.jpg'.format(movie_id)
+    })
 
 if __name__ == '__main__':
     main()

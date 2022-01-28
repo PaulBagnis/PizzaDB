@@ -117,10 +117,19 @@ class DockerManager(object):
             except docker.errors.NotFound:
                 pass
         print('Every provided images have been removed !')
+
     def pullHDFS(self, movie_id, movie_title):
         print("Retrieving from HDFS...")
         if self.reqToDocker("pullFromHDFS/{}".format(movie_id)):
             print("Download successful !")
+            # Test if directory exists in working directory, if not, creates it
+            if not os.path.isdir('results'):
+                try:
+                    os.mkdir('results')
+                    print('../result directory created')
+                except Exception as e:
+                    print('Error :' + e +
+                    'Failed to create ../results directory, please launch in administrator privileges')
             return os.rename("images/{}.jpg".format(movie_id), "results/{}.jpg".format(movie_title))
         else:
             print("Download failed !")

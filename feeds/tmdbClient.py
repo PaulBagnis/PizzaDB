@@ -10,7 +10,7 @@ CLEAR_SYNTAXE = 'cls' if platform == 'win32' else 'clear'
 
 
 class TMDbClient(object):
-    def __init__(self, img_dir_path=os.path.join(os.getcwd(), 'images')):
+    def __init__(self, elasticSearchClient=None, img_dir_path=os.path.join(os.getcwd(), 'images')):
         """
         DESC : set up tmdb API and fetch actu
 
@@ -20,7 +20,9 @@ class TMDbClient(object):
         tmdb.REQUESTS_TIMEOUT = 10
         tmdb.REQUESTS_SESSION = requests.Session()
         
+        self.db = elasticSearchClient
         self.img_dir_path = img_dir_path
+        # self.new_movies = self.fetchNewMovies()
 
     def movieMenu(self):
         """
@@ -28,20 +30,18 @@ class TMDbClient(object):
 
         OUT  : the ID and title of the choosen movie
         """
-        movie_list = [movie for movie in tmdb.Movies().now_playing()['results'] 
-                        if AlphabetDetector().only_alphabet_chars(movie['original_title'], 'LATIN')]
         warning=''
         while True:
             # os.system(CLEAR_SYNTAXE)
             print('\n\nList of available movies :\n')
-            for p, movie in enumerate(movie_list):
+            for p, movie in enumerate(self.new_movies):
                 print('{} : {}'.format(p, movie['original_title']))
             choice = input('\nWhat movie do you want info on ?\n{} > '.format(warning))
             # Test if choice is an Integer in the range of the menu
             if choice.isnumeric():
                 choice=int(choice)
                 if 0 <= choice <= p:
-                    return movie_list[choice]['id'], re.sub(r'[^\w\-\. ]', '_', movie_list[choice]['original_title'])
+                    return self.new_movies[choice]['id'], re.sub(r'[^\w\-\. ]', '_', self.new_movies[choice]['original_title']), float(format(self.new_movies[choice]['vote_average']/2, '.1f'))
                 else:
                     warning='An existing one this time...\n'
             else:
@@ -92,3 +92,28 @@ class TMDbClient(object):
         else:
             return 0
 
+    def fetchNewMovies(self):
+        self.new_movies = [movie for movie in tmdb.Movies().now_playing()['results'] 
+                        if AlphabetDetector().only_alphabet_chars(movie['original_title'], 'LATIN')]
+        return self.new_movies
+    
+    # def pushDb(self):
+    #     actions = []
+    #     for article in articles:
+    #         if not alreadyExists
+    #         # Test if article is in HTML format, if yes, parses via parsingHtml function
+    #         if BeautifulSoup(article['summary'], 'html.parser').find():
+    #             article['summary'] = self.parsingHtml(article['summary'])
+    #         pol = self.sa.calculatePolarity_baseFive(article['summary']) if self.sa else 'n/a'
+    #         actions.append({
+    #             '_index': source,
+    #             '_id': article['id'],
+    #             '_source': {
+    #                 'title': article['title'],
+    #                 'text': article['summary'],
+    #                 'polarity': pol,
+    #                 'date': article['published_parsed'],
+    #             },
+    #         })
+    #     self.db.insertData(actions)
+        
